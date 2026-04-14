@@ -12,7 +12,7 @@ class Config:
     """Configuration class for the application"""
     
    # MongoDB Configuration
-    MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb+srv://fadevadmin:c65q7FJC1iYPQ27G@cluster1.l2usi17.mongodb.net/rag_university_db')
+    MONGODB_URI = os.getenv('MONGODB_URI')
     MONGODB_DB_NAME = os.getenv('MONGODB_DB_NAME', 'rag_university_db')
     
     # OpenAI Configuration - OPTIMIZED
