@@ -1,0 +1,266 @@
+<!-- pdf-upload.component.html -->
+<div class="pdf-upload-container">
+  
+  <!-- Hidden file input -->
+  <input 
+    type="file" 
+    id="pdf-file-input" 
+    accept="application/pdf"
+    [multiple]="allowMultiple"
+    (change)="onFileSelected($event)"
+    style="display: none;">
+
+  <!-- Upload Area -->
+  <div 
+    class="upload-area"
+    [class.drag-over]="isDragOver"
+    [class.has-uploads]="uploadQueue.length > 0"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="triggerFileInput()">
+
+    <!-- Upload Content -->
+    <div class="upload-content">
+      
+      <!-- Upload Icon -->
+      <div class="upload-icon">
+        <mat-icon *ngIf="!isDragOver">picture_as_pdf</mat-icon>
+        <mat-icon *ngIf="isDragOver">file_download</mat-icon>
+      </div>
+
+      <!-- Upload Text -->
+      <div class="upload-text">
+        <h4 *ngIf="!isDragOver">{{ placeholder }}</h4>
+        <h4 *ngIf="isDragOver">Drop your PDF files here</h4>
+        
+        <p>
+          <span class="file-types">Supported: PDF files only</span>
+          <span class="file-size">Max size: 50MB per file</span>
+        </p>
+      </div>
+
+      <!-- Browse Button -->
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="browse-btn"
+        (click)="triggerFileInput(); $event.stopPropagation()">
+        <mat-icon>folder_open</mat-icon>
+        Browse PDF Files
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload Queue -->
+  <div *ngIf="uploadQueue.length > 0" class="upload-queue">
+    <h4>Upload Progress</h4>
+    
+    <!-- FIXED: Removed problematic trackBy function -->
+    <div *ngFor="let item of uploadQueue" class="upload-item">
+      
+      <div class="upload-item-header">
+        <div class="file-info">
+          <mat-icon class="file-icon">picture_as_pdf</mat-icon>
+          <div class="file-details">
+            <span class="file-name">{{ item.file.name }}</span>
+            <span class="file-size">{{ formatFileSize(item.file.size) }}</span>
+            <span class="university-info" *ngIf="universityName">
+              → {{ universityName }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="upload-status">
+          <mat-chip 
+            [class]="'status-' + item.progress.status"
+            [color]="item.progress.status === 'completed' ? 'primary' : 
+                     item.progress.status === 'error' ? 'warn' : 'accent'">
+            {{ item.progress.status | titlecase }}
+          </mat-chip>
+        </div>
+      </div>
+
+      <!-- Enhanced Processing Stages -->
+      <div class="processing-stages">
+        <div class="stages-header">
+          <span class="stages-title">Processing Pipeline</span>
+          <mat-progress-bar 
+            [mode]="item.progress.status === 'processing' ? 'indeterminate' : 'determinate'"
+            [value]="item.progress.progress"
+            [class]="'progress-' + item.progress.status"
+            class="main-progress">
+          </mat-progress-bar>
+        </div>
+        
+        <div class="stages-container">
+          <div *ngFor="let stage of item.processingStages; let i = index" 
+               class="processing-stage"
+               [class]="'stage-' + stage.status">
+            
+            <div class="stage-indicator">
+              <mat-icon 
+                [class]="'stage-icon stage-' + stage.status"
+                [color]="stage.status === 'completed' ? 'primary' : 
+                         stage.status === 'active' ? 'accent' : 
+                         stage.status === 'error' ? 'warn' : ''">
+                {{ stage.status === 'active' ? 'hourglass_empty' : 
+                   stage.status === 'completed' ? 'check_circle' : 
+                   stage.status === 'error' ? 'error' : stage.icon }}
+              </mat-icon>
+              
+              <!-- Connector Line -->
+              <div *ngIf="i < item.processingStages.length - 1" 
+                   class="stage-connector"
+                   [class.completed]="stage.status === 'completed'">
+              </div>
+            </div>
+            
+            <div class="stage-content">
+              <div class="stage-name">{{ stage.name }}</div>
+              <div class="stage-message">{{ stage.message }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Current Progress Details -->
+        <div class="progress-details" *ngIf="item.progress.status !== 'error'">
+          <div class="progress-text">
+            <mat-icon class="pulse-icon" *ngIf="item.progress.status === 'uploading' || item.progress.status === 'processing'">
+              {{ item.progress.status === 'uploading' ? 'cloud_upload' : 'auto_fix_high' }}
+            </mat-icon>
+            <span>{{ item.progress.message || 'Processing document...' }}</span>
+            <span *ngIf="item.progress.status === 'uploading'" class="progress-percent">
+              {{ item.progress.progress }}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="item.progress.status === 'error'" class="error-message enhanced-error">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <div class="error-content">
+          <div class="error-title">Upload Failed</div>
+          <div class="error-details">{{ item.progress.error }}</div>
+        </div>
+        <button mat-icon-button color="warn" (click)="removeFromQueue(item.id)" matTooltip="Remove from queue">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Uploaded Documents List -->
+  <div *ngIf="showDocumentList && universityXId" class="documents-section">
+    <div class="documents-header">
+      <h4>
+        <mat-icon>library_books</mat-icon>
+        Uploaded Documents
+        <mat-chip *ngIf="uploadedDocuments.length > 0" class="count-chip">
+          {{ uploadedDocuments.length }}
+        </mat-chip>
+      </h4>
+      
+      <button mat-icon-button (click)="loadExistingDocuments()" [disabled]="loading">
+        <mat-icon [class.spinning]="loading">refresh</mat-icon>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-section">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Loading documents...</p>
+    </div>
+
+    <!-- Documents List -->
+    <div *ngIf="!loading && uploadedDocuments.length > 0" class="documents-list">
+      <mat-card *ngFor="let doc of uploadedDocuments" class="document-card">
+        <mat-card-header>
+          <div mat-card-avatar class="document-avatar">
+            <mat-icon>{{ doc.fileType === 'pdf' ? 'picture_as_pdf' : 'description' }}</mat-icon>
+          </div>
+          <mat-card-title>{{ doc.filename }}</mat-card-title>
+          <mat-card-subtitle>
+            <div class="document-stats">
+              <span class="stat-item">
+                <mat-icon>pages</mat-icon>
+                {{ doc.pages }} pages
+              </span>
+              <span class="stat-item">
+                <mat-icon>auto_fix_high</mat-icon>
+                {{ doc.chunks }} chunks
+              </span>
+              <span class="stat-item">
+                <mat-icon>storage</mat-icon>
+                {{ formatFileSize(doc.size) }}
+              </span>
+            </div>
+          </mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <!-- Enhanced Capabilities Badges -->
+          <div class="capabilities-badges">
+            <mat-chip 
+              *ngIf="doc.hasVectorSearch" 
+              class="capability-chip ai-enabled"
+              matTooltip="AI-powered semantic search enabled">
+              <mat-icon matChipAvatar>psychology</mat-icon>
+              AI Search
+            </mat-chip>
+            <mat-chip 
+              class="capability-chip"
+              [class]="'processing-' + doc.processingMethod"
+              [matTooltip]="doc.processingMethod === 'enhanced_pdf' ? 'Enhanced PDF processing with full text extraction' : 'Legacy text processing'">
+              <mat-icon matChipAvatar>{{ doc.processingMethod === 'enhanced_pdf' ? 'verified' : 'text_fields' }}</mat-icon>
+              {{ doc.processingMethod === 'enhanced_pdf' ? 'Enhanced' : 'Legacy' }}
+            </mat-chip>
+            <mat-chip 
+              class="capability-chip search-type"
+              [matTooltip]="'Search type: ' + doc.searchType">
+              <mat-icon matChipAvatar>{{ doc.searchType === 'vector_semantic' ? 'insights' : 'search' }}</mat-icon>
+              {{ doc.searchType === 'vector_semantic' ? 'Semantic' : 'Keyword' }}
+            </mat-chip>
+          </div>
+          
+          <!-- Content Preview -->
+          <div class="content-preview" *ngIf="doc.contentPreview">
+            <h4>Content Preview:</h4>
+            <p>{{ doc.contentPreview }}</p>
+          </div>
+          
+          <!-- Upload Info -->
+          <div class="document-meta">
+            <span class="upload-date">
+              <mat-icon>schedule</mat-icon>
+              Uploaded {{ doc.uploadDate | date:'medium' }}
+            </span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button mat-button color="primary" matTooltip="Search within this document">
+            <mat-icon>search</mat-icon>
+            Search
+          </button>
+          <button mat-button color="accent" matTooltip="View document details">
+            <mat-icon>visibility</mat-icon>
+            View
+          </button>
+          <button mat-button color="warn" (click)="deleteDocument(doc)" matTooltip="Delete this document">
+            <mat-icon>delete</mat-icon>
+            Delete
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && uploadedDocuments.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">description</mat-icon>
+      <h3>No documents uploaded yet</h3>
+      <p>Upload PDF documents to enable AI-powered search and responses for {{ universityName || 'this university' }}.</p>
+    </div>
+  </div>
+</div>

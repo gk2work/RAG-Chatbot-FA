@@ -1,0 +1,267 @@
+<!-- admin-document-management.component.html - FIXED -->
+<div class="document-management-container">
+  
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-info">
+        <mat-icon class="header-icon">library_books</mat-icon>
+        <div class="header-text">
+          <h2>Document Management</h2>
+          <p class="university-info">
+            <mat-icon>school</mat-icon>
+            {{ universityName }} 
+            <mat-chip class="x-id-chip">{{ universityXId }}</mat-chip>
+          </p>
+        </div>
+      </div>
+      
+      <div class="header-stats" *ngIf="totalUploaded > 0">
+        <mat-icon color="primary">cloud_done</mat-icon>
+        <span>{{ totalUploaded }} documents uploaded this session</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Alerts -->
+  <div *ngIf="uploadErrors.length > 0" class="error-alerts">
+    <mat-card class="error-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="warn">error</mat-icon>
+        <mat-card-title>Upload Errors ({{ uploadErrors.length }})</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ul class="error-list">
+          <li *ngFor="let error of uploadErrors">{{ error }}</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="uploadErrors = []">
+          <mat-icon>clear</mat-icon>
+          Clear Errors
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Main Content Tabs -->
+  <mat-tab-group [(selectedIndex)]="activeTab" class="main-tabs">
+    
+    <!-- Upload Documents Tab -->
+    <mat-tab label="Upload Documents">
+      <div class="tab-content upload-tab">
+        
+        <!-- Upload Instructions -->
+        <mat-card class="instructions-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>info</mat-icon>
+            <mat-card-title>Upload Guidelines</mat-card-title>
+            <mat-card-subtitle>Best practices for document upload</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="guidelines-grid">
+              <div class="guideline-item">
+                <mat-icon color="primary">check_circle</mat-icon>
+                <div>
+                  <strong>Recommended Documents:</strong>
+                  <p>Course catalogs, student handbooks, admission guides, academic policies</p>
+                </div>
+              </div>
+              <div class="guideline-item">
+                <mat-icon color="primary">file_present</mat-icon>
+                <div>
+                  <strong>File Requirements:</strong>
+                  <p>PDF files only, maximum 50MB per file, clear text (not scanned images)</p>
+                </div>
+              </div>
+              <div class="guideline-item">
+                <mat-icon color="primary">psychology</mat-icon>
+                <div>
+                  <strong>AI Processing:</strong>
+                  <p>Documents are automatically processed for intelligent search and AI responses</p>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- PDF Upload Section -->
+        <div class="upload-section">
+          <app-pdf-upload
+            *ngIf="universityXId"
+            [universityXId]="universityXId"
+            [universityName]="universityName"
+            [allowMultiple]="true"
+            [showDocumentList]="true"
+            [placeholder]="'Upload PDF documents for ' + universityName"
+            (documentUploaded)="onDocumentUploaded($event)"
+            (uploadProgress)="onUploadProgress($event)"
+            (uploadError)="onUploadError($event)">
+          </app-pdf-upload>
+          
+          <!-- No University Context -->
+          <div *ngIf="!universityXId" class="no-context-state">
+            <mat-icon class="large-icon">error_outline</mat-icon>
+            <h3>University Context Missing</h3>
+            <p>Unable to load university information. Please refresh the page or contact support.</p>
+            <button mat-raised-button color="primary" (click)="loadUniversityContext()">
+              <mat-icon>refresh</mat-icon>
+              Retry Loading
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Search Documents Tab -->
+    <mat-tab label="Search Documents">
+      <div class="tab-content search-tab">
+        
+        <!-- Search Interface -->
+        <mat-card class="search-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar [color]="searchMethod === 'vector' ? 'primary' : 'accent'">
+              {{ getSearchMethodIcon() }}
+            </mat-icon>
+            <mat-card-title>{{ getSearchMethodLabel() }}</mat-card-title>
+            <mat-card-subtitle>{{ getSearchMethodDescription() }}</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="search-controls">
+              <!-- Search Input -->
+              <mat-form-field appearance="outline" class="search-input">
+                <mat-label>Search query</mat-label>
+                <input matInput 
+                       [(ngModel)]="searchQuery" 
+                       placeholder="Enter your search query..."
+                       (keyup.enter)="searchDocuments()">
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+              
+              <!-- Search Actions -->
+              <div class="search-actions">
+                <button mat-raised-button 
+                        color="primary" 
+                        (click)="searchDocuments()"
+                        [disabled]="!searchQuery.trim() || searching">
+                  <mat-icon *ngIf="!searching">search</mat-icon>
+                  <mat-icon *ngIf="searching" class="spinning">refresh</mat-icon>
+                  {{ searching ? 'Searching...' : 'Search' }}
+                </button>
+                
+                <button mat-button 
+                        (click)="switchSearchMethod()"
+                        [disabled]="searching">
+                  <mat-icon>swap_horiz</mat-icon>
+                  Switch to {{ searchMethod === 'vector' ? 'Text' : 'Vector' }}
+                </button>
+                
+                <button mat-button 
+                        (click)="clearSearch()"
+                        [disabled]="searching">
+                  <mat-icon>clear</mat-icon>
+                  Clear
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Search Results -->
+        <div *ngIf="searchResults.length > 0" class="search-results">
+          <div class="results-header">
+            <h3>
+              <mat-icon>article</mat-icon>
+              Search Results ({{ searchResults.length }})
+            </h3>
+            <!-- FIXED: Replaced mat-chip-list with simple div and mat-chip -->
+            <div class="search-method-chip">
+              <mat-chip color="primary" selected>
+                <mat-icon matChipAvatar>{{ getSearchMethodIcon() }}</mat-icon>
+                {{ getSearchMethodLabel() }}
+              </mat-chip>
+            </div>
+          </div>
+
+          <div class="results-list">
+            <mat-card *ngFor="let result of searchResults; let i = index" class="result-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar color="primary">picture_as_pdf</mat-icon>
+                <mat-card-title>{{ result.metadata.source_file }}</mat-card-title>
+                <mat-card-subtitle>
+                  Chunk {{ result.chunk_id }} of {{ result.metadata.total_chunks }}
+                  <span *ngIf="result.similarity_score" class="similarity-score">
+                    • {{ formatSimilarityScore(result.similarity_score) }}
+                  </span>
+                </mat-card-subtitle>
+              </mat-card-header>
+              
+              <mat-card-content>
+                <div class="result-text" [innerHTML]="highlightSearchTerm(result.text, searchQuery)">
+                </div>
+                
+                <!-- FIXED: Replaced mat-chip-list with simple div -->
+                <div class="result-meta">
+                  <div class="chips-container">
+                    <mat-chip>{{ result.metadata.chunk_size }} characters</mat-chip>
+                    <mat-chip *ngIf="searchMethod === 'vector' && result.similarity_score">
+                      {{ formatSimilarityScore(result.similarity_score) }}
+                    </mat-chip>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- No Results State -->
+        <div *ngIf="searchQuery && searchResults.length === 0 && !searching" class="no-results-state">
+          <mat-icon class="large-icon">sentiment_dissatisfied</mat-icon>
+          <h3>No Results Found</h3>
+          <p>No documents match your search query "{{ searchQuery }}"</p>
+          <div class="no-results-actions">
+            <button mat-button color="primary" (click)="switchSearchMethod()">
+              <mat-icon>swap_horiz</mat-icon>
+              Try {{ searchMethod === 'vector' ? 'Text' : 'Vector' }} Search
+            </button>
+            <button mat-button (click)="clearSearch()">
+              <mat-icon>clear</mat-icon>
+              Clear Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!searchQuery && searchResults.length === 0" class="empty-search-state">
+          <mat-icon class="large-icon">manage_search</mat-icon>
+          <h3>Search Your Documents</h3>
+          <p>Enter a query above to search through your uploaded PDF documents using AI-powered search.</p>
+          
+          <div class="search-examples">
+            <h4>Example Searches:</h4>
+            <!-- FIXED: Replaced mat-chip-list with simple div -->
+            <div class="example-chips">
+              <mat-chip (click)="searchQuery = 'admission requirements'; searchDocuments()">
+                admission requirements
+              </mat-chip>
+              <mat-chip (click)="searchQuery = 'course catalog'; searchDocuments()">
+                course catalog  
+              </mat-chip>
+              <mat-chip (click)="searchQuery = 'graduation policies'; searchDocuments()">
+                graduation policies
+              </mat-chip>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="searching" class="loading-state">
+          <mat-spinner diameter="50"></mat-spinner>
+          <h3>Searching Documents...</h3>
+          <p>Using {{ getSearchMethodLabel().toLowerCase() }} to find relevant content</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+body, html {
+  //overflow: hidden;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+// Hide all scrollbars globally
+* {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html, body { height: 100%;
+      overflow-y: auto;
+    }
+body { margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; }

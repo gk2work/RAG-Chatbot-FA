@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Chatbot Widget - Test Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        .iframe-test {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .iframe-test iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎓 University Website - Chatbot Integration Demo</h1>
+    
+    <div class="test-panel">
+        <h2>💬 Need Help? Try Our AI Assistant!</h2>
+        <p>Welcome to our university website! Our AI-powered chatbot is available 24/7 to help you with:</p>
+        <ul>
+            <li>📚 Program information and course details</li>
+            <li>🎯 Admission requirements and deadlines</li>
+            <li>🏫 Campus facilities and student life</li>
+            <li>💼 Career services and job placement</li>
+            <li>🌍 Study abroad opportunities</li>
+        </ul>
+        
+        <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h3>🤖 How to Use the Chat Widget</h3>
+            <p><strong>Look for the floating chat button in the bottom-right corner!</strong></p>
+            <p>Click it to start a conversation with our AI assistant.</p>
+        </div>
+
+        <h2>📊 Widget Status</h2>
+        <div id="angularStatus" class="status warning">🟡 Checking Chatbot Service...</div>
+        <div id="widgetStatus" class="status warning">🟡 Checking Widget...</div>
+        <div id="urlStatus" class="status warning">🟡 Checking Connection...</div>
+        
+        <h3>🧪 Widget Controls</h3>
+        <button onclick="testAngularServer()">Check Service</button>
+        <button onclick="testWidgetAPI()">Test Widget</button>
+        <button onclick="testIframe()">Test Chat</button>
+        <button onclick="clearLog()">Clear Log</button>
+        
+        <h3>📝 Activity Log</h3>
+        <div id="debugLog" class="log">Widget loading...\n</div>
+    </div>
+    
+    <div class="test-panel">
+        <h2>🎓 About Our University</h2>
+        <p>We are a leading institution dedicated to providing world-class education and fostering innovation. Our programs span across multiple disciplines, ensuring comprehensive learning experiences for all our students.</p>
+        
+        <h3>Academic Excellence</h3>
+        <p>Choose from our wide range of undergraduate and graduate programs designed to prepare you for success in your chosen field.</p>
+        
+        <h3>Campus Life</h3>
+        <p>Experience a vibrant campus community with state-of-the-art facilities, diverse student organizations, and endless opportunities for personal growth.</p>
+        
+        <h3>Research & Innovation</h3>
+        <p>Join our world-renowned faculty in groundbreaking research that addresses global challenges and drives innovation across various fields.</p>
+        
+        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h4>💡 Quick Tip</h4>
+            <p>Use the controls below to test the widget functionality, or simply click the floating chat button to start a conversation!</p>
+        </div>
+    </div>
+    
+    <div class="test-panel">
+        <h2>🖼️ Chat Interface Preview</h2>
+        <p>Direct preview of the chatbot interface:</p>
+        <div class="iframe-test">
+            <iframe id="directIframe" src="http://localhost:4200/chat/XNR35QWNP?widget=true&embedded=true"></iframe>
+        </div>
+        <p><em>This preview shows how the chat interface appears when embedded in the widget.</em></p>
+    </div>
+
+    <!-- Load the widget -->
+    <script src="./widget-loader.js" 
+            data-university="XNR35QWNP" 
+            data-position="bottom-right">
+    </script>
+
+    <script>
+        let logCount = 0;
+        
+        function log(message, type = 'info') {
+            logCount++;
+            const timestamp = new Date().toLocaleTimeString();
+            const logEl = document.getElementById('debugLog');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logEl.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(`Widget Activity:`, message);
+        }
+        
+        function clearLog() {
+            document.getElementById('debugLog').textContent = 'Activity log cleared.\n';
+            logCount = 0;
+        }
+        
+        function updateStatus(elementId, status, message) {
+            const el = document.getElementById(elementId);
+            el.className = `status ${status}`;
+            el.textContent = `${status === 'success' ? '✅' : status === 'error' ? '❌' : '🟡'} ${message}`;
+        }
+        
+        async function testAngularServer() {
+            log('Testing chatbot service...');
+            try {
+                const response = await fetch('http://localhost:4200/', { mode: 'no-cors' });
+                updateStatus('angularStatus', 'success', 'Chatbot Service Running');
+                log('Chatbot service is accessible', 'success');
+                
+                // Test specific route
+                setTimeout(() => {
+                    testChatbotRoute();
+                }, 1000);
+                
+            } catch (error) {
+                updateStatus('angularStatus', 'error', 'Chatbot Service Not Running');
+                log('Chatbot service not accessible: ' + error.message, 'error');
+                log('Please run: ng serve in your Angular project', 'error');
+            }
+        }
+        
+        async function testChatbotRoute() {
+            log('Testing chatbot route...');
+            try {
+                const response = await fetch('http://localhost:4200/chat/XNR35QWNP', { mode: 'no-cors' });
+                updateStatus('urlStatus', 'success', 'Chat Route OK');
+                log('Chatbot route is accessible', 'success');
+            } catch (error) {
+                updateStatus('urlStatus', 'error', 'Chat Route Failed');
+                log('Chatbot route failed: ' + error.message, 'error');
+            }
+        }
+        
+        function testWidgetAPI() {
+            log('Testing widget API...');
+            if (window.UniversityChatWidget) {
+                updateStatus('widgetStatus', 'success', 'Widget API Loaded');
+                log('Widget API is available', 'success');
+                log('Config: ' + JSON.stringify(window.UniversityChatWidget.config()));
+                
+                // Test widget methods
+                try {
+                    window.UniversityChatWidget.open();
+                    log('Widget open() method works');
+                    setTimeout(() => {
+                        window.UniversityChatWidget.close();
+                        log('Widget close() method works');
+                    }, 2000);
+                } catch (error) {
+                    log('Widget method error: ' + error.message, 'error');
+                }
+            } else {
+                updateStatus('widgetStatus', 'error', 'Widget API Not Loaded');
+                log('Widget API not available', 'error');
+            }
+        }
+        
+        function testIframe() {
+            log('Testing iframe loading...');
+            const iframe = document.getElementById('directIframe');
+            iframe.onload = function() {
+                log('Direct iframe loaded successfully', 'success');
+            };
+            iframe.onerror = function() {
+                log('Direct iframe failed to load', 'error');
+            };
+            
+            // Force reload
+            iframe.src = iframe.src;
+        }
+        
+        // Monitor iframe loading
+        window.addEventListener('message', function(event) {
+            log('Received message: ' + JSON.stringify(event.data));
+            
+            if (event.data.type === 'chat-ready') {
+                log('Chat is ready in iframe!', 'success');
+                updateStatus('urlStatus', 'success', 'Chat Interface Loaded');
+            }
+        });
+        
+        // Auto-run tests on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('University website loaded with chat widget');
+            
+            setTimeout(() => {
+                testAngularServer();
+                testWidgetAPI();
+            }, 1000);
+            
+            // Check for widget button
+            setTimeout(() => {
+                const widgetButton = document.getElementById('university-chat-widget-button');
+                if (widgetButton) {
+                    log('Widget button found in DOM', 'success');
+                } else {
+                    log('Widget button not found in DOM', 'error');
+                }
+            }, 2000);
+        });
+        
+        // Network error detection
+        window.addEventListener('error', function(event) {
+            if (event.target.tagName === 'IFRAME') {
+                log('Iframe loading error detected', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

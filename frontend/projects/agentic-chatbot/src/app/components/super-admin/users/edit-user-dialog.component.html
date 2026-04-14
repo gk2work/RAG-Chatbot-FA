@@ -1,0 +1,92 @@
+<h2 mat-dialog-title>
+  <mat-icon>edit</mat-icon>
+  Edit User
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="userForm" class="edit-user-dialog">
+    <div class="form-container">
+      
+      <!-- User Info Header -->
+      <div class="user-header">
+        <div class="user-avatar">{{ data.user.profile?.first_name?.charAt(0) || data.user.email.charAt(0) }}</div>
+        <div class="user-info">
+          <h3>{{ data.user.profile?.first_name }} {{ data.user.profile?.last_name }}</h3>
+          <p>{{ data.user.email }}</p>
+        </div>
+      </div>
+
+      <!-- First Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="first_name" placeholder="Enter first name">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="userForm.get('first_name')?.hasError('required')">
+          First name is required
+        </mat-error>
+        <mat-error *ngIf="userForm.get('first_name')?.hasError('minlength')">
+          First name must be at least 2 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Last Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="last_name" placeholder="Enter last name">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="userForm.get('last_name')?.hasError('required')">
+          Last name is required
+        </mat-error>
+        <mat-error *ngIf="userForm.get('last_name')?.hasError('minlength')">
+          Last name must be at least 2 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Role Selection -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>User Role</mat-label>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let role of roles" [value]="role.value">
+            <div class="role-option">
+              <strong>{{ role.label }}</strong>
+              <span class="role-desc">{{ role.description }}</span>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-hint>Determines user permissions and access level</mat-hint>
+      </mat-form-field>
+
+      <!-- University Selection (only for admin role) -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="isAdminRole">
+        <mat-label>Assign to University</mat-label>
+        <mat-select formControlName="university_id">
+          <mat-option value="">Select University</mat-option>
+          <mat-option *ngFor="let university of universities" [value]="university.x_id">
+            <div class="university-option">
+              <strong>{{ university.name }}</strong>
+              <span class="university-code">({{ university.code }})</span>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-hint>Admin users must be assigned to a specific university</mat-hint>
+        <mat-error *ngIf="userForm.get('university_id')?.hasError('required')">
+          University assignment is required for admin users
+        </mat-error>
+      </mat-form-field>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="updating">
+    Cancel
+  </button>
+  <button mat-raised-button color="primary" 
+          (click)="onUpdate()" 
+          [disabled]="userForm.invalid || updating">
+    <mat-icon *ngIf="!updating">save</mat-icon>
+    <mat-icon *ngIf="updating" class="spinning">refresh</mat-icon>
+    {{ updating ? 'Updating...' : 'Update User' }}
+  </button>
+</mat-dialog-actions>

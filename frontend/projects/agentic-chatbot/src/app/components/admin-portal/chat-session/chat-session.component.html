@@ -1,0 +1,193 @@
+<div class="table-content">
+  <div class="content-header">
+    <div class="header-actions">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Search sessions</mat-label>
+        <input matInput 
+               placeholder="Search by lead, university, or session ID..."
+               [(ngModel)]="searchTerm"
+               (ngModelChange)="onSearchChange()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      
+      <button mat-raised-button color="accent" (click)="onExportSessions()">
+        <mat-icon>download</mat-icon>
+        Export Sessions
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="sessions-table">
+      <!-- Session ID Column -->
+      <ng-container matColumnDef="session">
+        <th mat-header-cell *matHeaderCellDef>Session</th>
+        <td mat-cell *matCellDef="let session">
+          <div class="session-info">
+            <div class="session-id">#{{session._id.slice(-6)}}</div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Lead Column -->
+      <ng-container matColumnDef="lead">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Lead</th>
+        <td mat-cell *matCellDef="let session">
+          <div class="lead-info">
+            <div class="lead-avatar small">{{(session.lead_name || 'A').charAt(0).toUpperCase()}}</div>
+            <div class="lead-name">{{session.lead_name || 'Anonymous'}}</div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- University Column -->
+      <ng-container matColumnDef="university">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>University</th>
+        <td mat-cell *matCellDef="let session">
+          <mat-chip-set>
+            <mat-chip>{{session.university_code.toUpperCase()}}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <!-- Messages Column -->
+      <ng-container matColumnDef="messages">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Messages</th>
+        <td mat-cell *matCellDef="let session">{{session.message_count}}</td>
+      </ng-container>
+
+      <!-- Duration Column -->
+      <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef>Duration</th>
+        <td mat-cell *matCellDef="let session">{{getSessionDuration(session)}}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let session">
+          <mat-chip [color]="session.is_active ? 'primary' : 'basic'">
+            {{session.is_active ? 'Active' : 'Completed'}}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Created Column -->
+      <ng-container matColumnDef="created">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+        <td mat-cell *matCellDef="let session">{{formatDate(session.created_at).split(',')[0]}}</td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let session">
+          <button mat-icon-button color="primary" (click)="selectSession(session)" matTooltip="View Session">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          (click)="selectSession(row)" 
+          class="clickable-row"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                   showFirstLastButtons
+                   aria-label="Select page of sessions">
+    </mat-paginator>
+  </div>
+</div>
+
+<!-- Session Modal -->
+<div class="modal-overlay" *ngIf="selectedSession" (click)="closeModal()">
+  <div class="modal-container large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <div class="session-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15A2 2 0 0 1 19 17H7L4 20V5A2 2 0 0 1 6 3H19A2 2 0 0 1 21 5V15Z"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Chat Session #{{selectedSession._id.slice(-6)}}</h2>
+          <p>{{selectedSession.lead_name || 'Anonymous'}} • {{getSessionDuration(selectedSession)}}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="closeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <div class="session-meta">
+        <div class="meta-item">
+          <span class="meta-label">Lead</span>
+          <span class="meta-value">{{selectedSession.lead_name || 'Anonymous'}}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">University</span>
+          <span class="meta-value">
+            <span class="university-badge">{{selectedSession.university_code.toUpperCase()}}</span>
+          </span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Messages</span>
+          <span class="meta-value">{{selectedSession.message_count}}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Status</span>
+          <span class="meta-value">
+            <span class="status-badge" [class.active]="selectedSession.is_active">
+              {{selectedSession.is_active ? 'Active' : 'Completed'}}
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <div class="topics-section" *ngIf="selectedSession.topics && selectedSession.topics.length > 0">
+  <h4>Topics Discussed</h4>
+  <div class="topics-list">
+    <span class="topic-tag" *ngFor="let topic of selectedSession.topics">{{topic}}</span>
+  </div>
+</div>
+
+<div class="chat-messages-section">
+  <h4>Conversation</h4>
+  <div class="chat-container">
+    <div class="chat-message" 
+         *ngFor="let message of selectedSession.messages"
+         [class.user-msg]="message.type === 'user'"
+         [class.assistant-msg]="message.type === 'assistant'">
+      <div class="message-avatar" *ngIf="message.type === 'assistant'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+          <path d="M2 17L12 22L22 17"/>
+          <path d="M2 12L12 17L22 12"/>
+        </svg>
+      </div>
+      <div class="message-avatar" *ngIf="message.type === 'user'">
+        {{(selectedSession.lead_name || 'U').charAt(0).toUpperCase()}}
+      </div>
+      <div class="message-bubble">
+        <div class="message-content" [innerHTML]="message.content | markdown"></div>
+        <div class="message-time">{{formatDate(message.timestamp)}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="modal-footer">
+  <button class="btn secondary" (click)="closeModal()">Close</button>
+  <button class="btn primary">Export Conversation</button>
+</div>
+
+
+  </div>
+</div>

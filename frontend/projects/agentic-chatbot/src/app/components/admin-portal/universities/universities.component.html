@@ -1,0 +1,125 @@
+<!-- My University Dashboard - REDESIGNED -->
+<div class="my-university-dashboard">
+  
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h3>Loading Your University...</h3>
+      <p>Fetching the latest data and statistics</p>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Content -->
+  <div *ngIf="!loading && filteredUniversities.length > 0" class="dashboard-content">
+    
+    <!-- Dynamic University Header -->
+    <div class="dynamic-university-header" *ngFor="let university of filteredUniversities">
+      
+      <!-- Static Background -->
+      <div class="static-background"></div>
+      
+      <!-- Main Content -->
+      <div class="header-main-content">
+        
+        <!-- University Identity Section -->
+        <div class="university-showcase">
+          <div class="university-avatar-container">
+            <div class="avatar-glow"></div>
+            <div class="university-avatar">
+              <mat-icon>account_balance</mat-icon>
+            </div>
+            <div class="avatar-ring"></div>
+          </div>
+          
+          <div class="university-info">
+            <div class="university-title">
+              <h1 class="university-name">{{ university.name }}</h1>
+              <div class="name-underline"></div>
+            </div>
+            
+            <div class="university-badges">
+              <div class="badge-item code-badge">
+                <mat-icon>badge</mat-icon>
+                <span>{{ university.code }}</span>
+              </div>
+              <div class="badge-item xid-badge">
+                <mat-icon>fingerprint</mat-icon>
+                <span>{{ university.x_id }}</span>
+              </div>
+            </div>
+            
+            <div class="university-description" *ngIf="university.description">
+              <mat-icon>school</mat-icon>
+              <p>{{ university.description }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Panel -->
+        <div class="action-panel">
+          <div class="panel-header">
+            <h3>Document Management</h3>
+            <div class="header-line"></div>
+          </div>
+          
+          <div class="action-buttons">
+            <button mat-flat-button 
+                    (click)="onManageDocuments(university)"
+                    class="action-button primary-action">
+              <div class="button-content">
+                <div class="button-icon">
+                  <mat-icon>folder_open</mat-icon>
+                </div>
+                <div class="button-text">
+                  <span class="button-title">Manage Documents</span>
+                  <span class="button-subtitle">Upload & organize PDFs</span>
+                </div>
+              </div>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+            </button>
+          </div>
+          
+          <!-- Status Indicators -->
+          <div class="status-indicators">
+            <div class="status-item">
+              <div class="status-dot active"></div>
+              <span>System Online</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot" [class]="(university.stats?.total_documents || 0) > 0 ? 'active' : 'inactive'"></div>
+              <span>{{ (university.stats?.total_documents || 0) > 0 ? 'Documents Ready' : 'No Documents' }}</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot" [class]="getAIReadinessScore(university) >= 70 ? 'active' : 'warning'"></div>
+              <span>AI {{ getAIReadinessScore(university) >= 70 ? 'Ready' : 'Setup Needed' }}</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+    </div>
+
+
+
+
+
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && filteredUniversities.length === 0" class="empty-state">
+    <div class="empty-content">
+      <div class="empty-icon">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <h3>No University Found</h3>
+      <p>It looks like your account doesn't have access to any university. Please contact your administrator.</p>
+      <button mat-raised-button color="primary" (click)="loadUniversities()">
+        <mat-icon>refresh</mat-icon>
+        Reload
+      </button>
+    </div>
+  </div>
+
+</div>

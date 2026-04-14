@@ -1,0 +1,291 @@
+<h2 mat-dialog-title>
+  <mat-icon>palette</mat-icon>
+  University Branding - {{ data.university.name }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="brandingForm" class="branding-dialog">
+    <mat-tab-group>
+      <!-- Logo & Colors Tab -->
+      <mat-tab label="Logo & Colors">
+        <div class="tab-content">
+          <!-- Logo Upload Section -->
+          <div class="section">
+            <h3>Logo & Visual Assets</h3>
+
+            <!-- Logo Upload -->
+            <div class="upload-section">
+              <h4>University Logo</h4>
+              <app-file-upload
+                [previewUrl]="brandingForm.get('logo_url')?.value"
+                placeholder="Upload your university logo"
+                uploadFolder="logos"
+                (fileUploaded)="onLogoUploaded($event)"
+                (uploadError)="onUploadError($event)"
+              >
+              </app-file-upload>
+            </div>
+
+            <!-- Favicon Upload -->
+            <div class="upload-section">
+              <h4>Website Favicon</h4>
+              <app-file-upload
+                [previewUrl]="brandingForm.get('favicon_url')?.value"
+                placeholder="Upload your website favicon"
+                uploadFolder="favicons"
+                acceptedTypes="image/png,image/x-icon,image/vnd.microsoft.icon"
+                [maxFileSize]="1024 * 1024"
+                (fileUploaded)="onFaviconUploaded($event)"
+                (uploadError)="onUploadError($event)"
+              >
+              </app-file-upload>
+            </div>
+
+            <!-- URL Fallback Option -->
+            <div class="url-fallback">
+              <button
+                mat-button
+                type="button"
+                (click)="showUrlInputs = !showUrlInputs"
+              >
+                <mat-icon>{{
+                  showUrlInputs ? "expand_less" : "expand_more"
+                }}</mat-icon>
+                Or enter URLs manually
+              </button>
+
+              <div *ngIf="showUrlInputs" class="url-inputs">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Logo URL</mat-label>
+                  <input matInput formControlName="logo_url" />
+                  <mat-icon matSuffix>link</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Favicon URL</mat-label>
+                  <input matInput formControlName="favicon_url" />
+                  <mat-icon matSuffix>link</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Scheme Section -->
+          <div class="section">
+            <h3>Color Scheme</h3>
+
+            <div class="color-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>Primary Color</mat-label>
+                <input matInput type="color" formControlName="primary_color" />
+                <mat-hint>Main brand color</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Secondary Color</mat-label>
+                <input
+                  matInput
+                  type="color"
+                  formControlName="secondary_color"
+                />
+                <mat-hint>Secondary accent</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Accent Color</mat-label>
+                <input matInput type="color" formControlName="accent_color" />
+                <mat-hint>Highlight color</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <!-- Color Preview -->
+            <div class="color-preview">
+              <h4>Preview</h4>
+              <div
+                class="preview-card"
+                [style.background-color]="previewColors.primary"
+              >
+                <div class="preview-header" [style.color]="'white'">
+                  {{ data.university.name }}
+                </div>
+                <div
+                  class="preview-button"
+                  [style.background-color]="previewColors.accent"
+                >
+                  Sample Button
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typography Section -->
+          <div class="section">
+            <h3>Typography & Theme</h3>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Font Family</mat-label>
+              <input
+                matInput
+                formControlName="font_family"
+                placeholder="Roboto, sans-serif"
+              />
+              <mat-hint>CSS font family for your brand</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Theme Name</mat-label>
+              <input
+                matInput
+                formControlName="theme_name"
+                placeholder="modern-theme"
+              />
+              <mat-hint>Internal theme identifier</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Domain Settings Tab -->
+      <mat-tab label="Domain Settings">
+        <div class="tab-content">
+          <div class="section">
+            <h3>Domain Configuration</h3>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Primary Domain</mat-label>
+              <input
+                matInput
+                formControlName="primary_domain"
+                placeholder="university.edu"
+              />
+              <mat-icon matSuffix>domain</mat-icon>
+              <mat-hint>Your university's main website domain</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Subdomain</mat-label>
+              <input matInput formControlName="subdomain" placeholder="chat" />
+              <mat-icon matSuffix>link</mat-icon>
+              <mat-hint
+                >Subdomain for the chat system (e.g.,
+                chat.university.edu)</mat-hint
+              >
+            </mat-form-field>
+
+            <!-- Domain Preview -->
+            <div class="domain-preview">
+              <h4>URLs Preview</h4>
+              <div class="url-examples">
+                <p>
+                  <strong>Chat URL:</strong> https://{{
+                    brandingForm.get("subdomain")?.value || "chat"
+                  }}.{{
+                    brandingForm.get("primary_domain")?.value ||
+                      "university.edu"
+                  }}
+                </p>
+                <p>
+                  <strong>Admin URL:</strong> https://{{
+                    brandingForm.get("subdomain")?.value || "chat"
+                  }}.{{
+                    brandingForm.get("primary_domain")?.value ||
+                      "university.edu"
+                  }}/admin
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Contact Info Tab -->
+      <mat-tab label="Contact Info">
+        <div class="tab-content">
+          <div class="section">
+            <h3>University Contact Information</h3>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Website URL</mat-label>
+              <input
+                matInput
+                formControlName="website_url"
+                placeholder="https://university.edu"
+              />
+              <mat-icon matSuffix>language</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Support Email</mat-label>
+              <input
+                matInput
+                formControlName="support_email"
+                placeholder="support@university.edu"
+              />
+              <mat-icon matSuffix>email</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input
+                matInput
+                formControlName="phone"
+                placeholder="+1 (555) 123-4567"
+              />
+              <mat-icon matSuffix>phone</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Address</mat-label>
+              <textarea
+                matInput
+                formControlName="address"
+                rows="3"
+                placeholder="123 University Ave, City, State 12345"
+              ></textarea>
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Advanced Settings Tab -->
+      <mat-tab label="Advanced">
+        <div class="tab-content">
+          <div class="section">
+            <h3>Custom CSS</h3>
+            <p class="section-description">
+              Add custom CSS to further customize the appearance
+            </p>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Custom CSS</mat-label>
+              <textarea
+                matInput
+                formControlName="custom_css"
+                rows="8"
+                placeholder="/* Your custom CSS here */"
+              ></textarea>
+              <mat-hint
+                >Advanced styling overrides (CSS knowledge required)</mat-hint
+              >
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="updating">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="updating"
+  >
+    <mat-icon *ngIf="!updating">save</mat-icon>
+    <mat-icon *ngIf="updating" class="spinning">refresh</mat-icon>
+    {{ updating ? "Saving..." : "Save Branding" }}
+  </button>
+</mat-dialog-actions>

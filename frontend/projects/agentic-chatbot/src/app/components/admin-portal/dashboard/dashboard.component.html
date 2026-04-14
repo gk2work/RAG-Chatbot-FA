@@ -1,0 +1,301 @@
+<div class="dashboard-content">
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card primary">
+      <div class="stat-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M20 21V19A4 4 0 0 0 16 15H8A4 4 0 0 0 4 19V21" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalLeads | number }}</div>
+        <div class="stat-label">Total Leads</div>
+        <div class="stat-trend positive" *ngIf="totalLeads > 0">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22,12 18,8 14,12 8,6 2,12" />
+            <polyline points="16,8 22,8 22,14" />
+          </svg>
+          Active
+        </div>
+      </div>
+    </div>
+    <div class="stat-card success">
+      <div class="stat-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M21 15A2 2 0 0 1 19 17H7L4 20V5A2 2 0 0 1 6 3H19A2 2 0 0 1 21 5V15Z"
+          />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalSessions | number }}</div>
+        <div class="stat-label">Chat Sessions</div>
+        <div class="stat-trend positive" *ngIf="totalSessions > 0">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22,12 18,8 14,12 8,6 2,12" />
+            <polyline points="16,8 22,8 22,14" />
+          </svg>
+          Growing
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card warning">
+      <div class="stat-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8L14 2Z"
+          />
+          <polyline points="14,2 14,8 20,8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10,9 9,9 8,9" />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalDocuments | number }}</div>
+        <div class="stat-label">Documents</div>
+        <div class="stat-trend neutral">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Stable
+        </div>
+      </div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12,6 12,12 16,14" />
+        </svg>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ todaySessions | number }}</div>
+        <div class="stat-label">Today's Sessions</div>
+        <div
+          class="stat-trend"
+          [class.positive]="todaySessions > 0"
+          [class.neutral]="todaySessions === 0"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12,6 12,12 16,14" />
+          </svg>
+          {{ todaySessions > 0 ? "Active" : "Quiet" }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Categorization Section -->
+  <div class="dashboard-section">
+    <div class="section-header">
+      <h3>Lead Categorization</h3>
+      <p>Distribution of leads by category</p>
+    </div>
+
+    <!-- Categorization Chart Card -->
+    <div class="categorization-card">
+      <!-- Chart Container -->
+      <div
+        class="chart-container"
+        *ngIf="hasCategorizationData(); else noDataTemplate"
+      >
+        <div class="chart-wrapper">
+          <canvas #categorizationChart></canvas>
+        </div>
+
+        <!-- Statistics Summary -->
+        <div class="categorization-stats">
+          <div class="stat-item hot">
+            <div class="stat-indicator"></div>
+            <div class="stat-details">
+              <span class="stat-value">{{ categorizationStats.hot }}</span>
+              <span class="stat-label">Hot Leads</span>
+              <span class="stat-percentage"
+                >{{ getCategorizationPercentages().hot }}%</span
+              >
+            </div>
+          </div>
+
+          <div class="stat-item cold">
+            <div class="stat-indicator"></div>
+            <div class="stat-details">
+              <span class="stat-value">{{ categorizationStats.cold }}</span>
+              <span class="stat-label">Cold Leads</span>
+              <span class="stat-percentage"
+                >{{ getCategorizationPercentages().cold }}%</span
+              >
+            </div>
+          </div>
+
+          <div class="stat-item not-defined">
+            <div class="stat-indicator"></div>
+            <div class="stat-details">
+              <span class="stat-value">{{
+                categorizationStats.not_defined
+              }}</span>
+              <span class="stat-label">Not Defined</span>
+              <span class="stat-percentage"
+                >{{ getCategorizationPercentages().not_defined }}%</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Data Template -->
+      <ng-template #noDataTemplate>
+        <div class="no-data-state">
+          <div class="no-data-icon">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6V12L16 14" />
+            </svg>
+          </div>
+          <h4>No Categorization Data</h4>
+          <p>Start categorizing your leads to see the distribution chart.</p>
+          <button class="btn btn-primary" (click)="tabChange.emit('leads')">
+            View Leads
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <div class="section-header">
+      <h2>Quick Actions</h2>
+      <p>Manage your system efficiently</p>
+    </div>
+    <div class="actions-grid">
+      <button class="action-card" (click)="onQuickAction('leads')">
+        <div class="action-icon">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M16 21V5A2 2 0 0 0 14 3H10A2 2 0 0 0 8 5V21L12 19L16 21Z"
+            />
+          </svg>
+        </div>
+        <div class="action-content">
+          <h3>View All Leads</h3>
+          <p>Manage and export lead data</p>
+        </div>
+      </button>
+
+      <button class="action-card" (click)="onQuickAction('sessions')">
+        <div class="action-icon">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M21 15A2 2 0 0 1 19 17H7L4 20V5A2 2 0 0 1 6 3H19A2 2 0 0 1 21 5V15Z"
+            />
+          </svg>
+        </div>
+        <div class="action-content">
+          <h3>Chat Analytics</h3>
+          <p>Review conversation insights</p>
+        </div>
+      </button>
+
+      <button class="action-card" (click)="onQuickAction('export')">
+        <div class="action-icon">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V15" />
+            <polyline points="7,10 12,15 17,10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </div>
+        <div class="action-content">
+          <h3>Export Data</h3>
+          <p>Download reports in CSV format</p>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>

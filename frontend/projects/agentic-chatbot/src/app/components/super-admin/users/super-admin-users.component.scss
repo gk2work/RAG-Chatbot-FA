@@ -1,0 +1,466 @@
+// super-admin-users.component.scss
+.users-container {
+  padding: 0;
+
+  // Page Header
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+
+    .header-content {
+      h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+        background: linear-gradient(135deg, #1976d2, #1565c0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 1rem;
+      }
+    }
+
+    .header-actions {
+      button {
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+
+  // Filters Section
+  .filters-section {
+    margin-bottom: 2rem;
+
+    .filters-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      .filters-row {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+
+        .filter-field {
+          min-width: 200px;
+          margin-bottom: 0;
+        }
+
+        .filter-info {
+          margin-left: auto;
+
+          .result-count {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  // Loading State
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+
+    mat-spinner {
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #666;
+      font-size: 1rem;
+    }
+  }
+
+  // Error State
+  .error-card {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    margin-bottom: 2rem;
+
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      mat-icon {
+        color: #dc2626;
+      }
+
+      span {
+        flex: 1;
+        color: #991b1b;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Table Card
+  .table-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    mat-card-header {
+      mat-card-title {
+        color: #333;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      mat-card-subtitle {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+
+      .users-table {
+        width: 100%;
+        min-width: 900px;
+
+        th {
+          font-weight: 600;
+          color: #333;
+          background-color: #f8f9fa;
+        }
+
+        td {
+          border-bottom: 1px solid #e0e0e0;
+
+          // User Info Column
+          .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            .user-avatar {
+              mat-icon {
+                font-size: 2.5rem;
+                width: 2.5rem;
+                height: 2.5rem;
+                color: #1976d2;
+              }
+            }
+
+            .user-details {
+              display: flex;
+              flex-direction: column;
+              gap: 0.125rem;
+
+              strong {
+                font-size: 1rem;
+                color: #333;
+                font-weight: 600;
+              }
+
+              .email {
+                font-size: 0.875rem;
+                color: #666;
+              }
+
+              .phone {
+                font-size: 0.75rem;
+                color: #888;
+              }
+            }
+          }
+
+          // Role Chips
+          .role-chip-superadmin {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #d32f2f;
+            border: 1px solid #f44336;
+
+            mat-icon {
+              color: #d32f2f;
+            }
+          }
+
+          .role-chip-admin {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #1976d2;
+            border: 1px solid #2196f3;
+
+            mat-icon {
+              color: #1976d2;
+            }
+          }
+
+          .role-chip-student {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+
+            mat-icon {
+              color: #2e7d32;
+            }
+          }
+
+          // University Info - Enhanced
+          .university-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #333;
+
+            .university-icon {
+              font-size: 1.125rem;
+              color: #1976d2;
+            }
+
+            .university-details {
+              display: flex;
+              flex-direction: column;
+              gap: 0.125rem;
+
+              .university-name {
+                font-weight: 500;
+                color: #333;
+                font-size: 0.875rem;
+              }
+
+              .university-code {
+                font-size: 0.75rem;
+                color: #666;
+                font-style: italic;
+              }
+            }
+          }
+
+          .default-university {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+
+            &.superadmin-access {
+              color: #7c3aed;
+              
+              .all-access-icon {
+                color: #7c3aed;
+                font-size: 1.125rem;
+              }
+            }
+
+            &.unassigned {
+              color: #f59e0b;
+              
+              .unassigned-icon {
+                color: #f59e0b;
+                font-size: 1.125rem;
+              }
+            }
+          }
+
+          .no-university {
+            color: #888;
+            font-style: italic;
+            font-size: 0.875rem;
+          }
+
+          // Status Chips
+          .status-active {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+
+            mat-icon {
+              color: #4caf50;
+            }
+          }
+
+          .status-inactive {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #d32f2f;
+            border: 1px solid #f44336;
+
+            mat-icon {
+              color: #f44336;
+            }
+          }
+
+          // Login Info
+          .login-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.875rem;
+
+            mat-icon {
+              font-size: 1rem;
+              color: #666;
+            }
+          }
+
+          .never-logged-in {
+            color: #888;
+            font-style: italic;
+            font-size: 0.875rem;
+          }
+
+          // Action Buttons
+          .action-buttons {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+
+            button {
+              width: 2.25rem;
+              height: 2.25rem;
+              border-radius: 6px;
+              transition: all 0.2s ease;
+
+              &:hover {
+                transform: scale(1.05);
+              }
+            }
+
+            // Deactivate Button (for active users)
+            .deactivate-btn {
+              color: #dc2626;
+              
+              &:hover {
+                background-color: #fef2f2;
+                color: #b91c1c;
+              }
+              
+              mat-icon {
+                color: inherit;
+              }
+            }
+
+            // Reactivate Button (for inactive users)
+            .reactivate-btn {
+              color: #059669;
+              
+              &:hover {
+                background-color: #f0fdf4;
+                color: #047857;
+              }
+              
+              mat-icon {
+                color: inherit;
+              }
+            }
+          }
+        }
+
+        // Table Row Hover Effect
+        .mat-mdc-row:hover {
+          background-color: #f8f9fa;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .users-container {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .header-actions {
+        width: 100%;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+
+    .filters-section .filters-card .filters-row {
+      flex-direction: column;
+      align-items: stretch;
+
+      .filter-field {
+        min-width: auto;
+        width: 100%;
+      }
+
+      .filter-info {
+        margin-left: 0;
+        margin-top: 1rem;
+        text-align: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .users-container {
+    .page-header .header-content h1 {
+      font-size: 1.5rem;
+    }
+
+    .table-card .table-container {
+      .users-table {
+        min-width: 700px;
+
+        .user-info {
+          .user-avatar mat-icon {
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+          }
+
+          .user-details {
+            strong {
+              font-size: 0.9rem;
+            }
+
+            .email {
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Material Design Overrides
+::ng-deep {
+  .mat-mdc-chip {
+    --mdc-chip-container-height: 28px;
+    --mdc-chip-label-text-size: 0.8rem;
+    font-weight: 500;
+
+    .mat-mdc-chip-action-label {
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
+  .mat-mdc-table {
+    --mat-table-row-item-container-height: auto;
+  }
+}

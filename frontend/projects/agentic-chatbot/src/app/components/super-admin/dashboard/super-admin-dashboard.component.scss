@@ -1,0 +1,328 @@
+// super-admin-dashboard.component.scss
+.dashboard-container {
+  padding: 0;
+  
+  // Dashboard Header
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+    
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #333;
+      background: linear-gradient(135deg, #1976d2, #1565c0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      
+      .last-updated {
+        font-size: 0.875rem;
+        color: #666;
+        font-weight: 500;
+      }
+      
+      button {
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+  
+  // Loading State
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    
+    mat-spinner {
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      color: #666;
+      font-size: 1rem;
+    }
+  }
+  
+  // Error State
+  .error-card {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    margin-bottom: 2rem;
+    
+    mat-card-content {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      
+      mat-icon {
+        color: #dc2626;
+      }
+      
+      span {
+        flex: 1;
+        color: #991b1b;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  // Dashboard Content
+  .dashboard-content {
+    .stats-section {
+      margin-bottom: 3rem;
+      
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
+        
+        &::after {
+          content: '';
+          display: block;
+          width: 50px;
+          height: 3px;
+          background: linear-gradient(135deg, #1976d2, #1565c0);
+          margin-top: 0.5rem;
+          border-radius: 2px;
+        }
+      }
+      
+      // Overview Grid
+      .overview-grid {
+        .stat-card {
+          height: 100%;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border-radius: 12px;
+          overflow: hidden;
+          
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+          }
+          
+          mat-card-content {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 1.5rem !important;
+            
+            .stat-icon {
+              margin-right: 1rem;
+              
+              mat-icon {
+                font-size: 2.5rem;
+                width: 2.5rem;
+                height: 2.5rem;
+                line-height: 2.5rem;
+              }
+            }
+            
+            .stat-info {
+              h3 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0 0 0.25rem 0;
+                line-height: 1;
+              }
+              
+              p {
+                font-size: 0.875rem;
+                font-weight: 500;
+                margin: 0;
+                opacity: 0.8;
+              }
+            }
+          }
+          
+          // Color variations for different cards
+          &.universities {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            color: #2e7d32;
+            
+            .stat-icon mat-icon {
+              color: #4caf50;
+            }
+          }
+          
+          &.users {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #1565c0;
+            
+            .stat-icon mat-icon {
+              color: #2196f3;
+            }
+          }
+          
+          &.leads {
+            background: linear-gradient(135deg, #fff3e0, #ffcc02);
+            color: #e65100;
+            
+            .stat-icon mat-icon {
+              color: #ff9800;
+            }
+          }
+          
+          &.sessions {
+            background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+            color: #c2185b;
+            
+            .stat-icon mat-icon {
+              color: #e91e63;
+            }
+          }
+          
+          &.active {
+            background: linear-gradient(135deg, #f3e5f5, #ce93d8);
+            color: #7b1fa2;
+            
+            .stat-icon mat-icon {
+              color: #9c27b0;
+            }
+          }
+        }
+      }
+      
+      // Activity Cards
+      .activity-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        
+        .activity-card {
+          border-radius: 12px;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+          }
+          
+          mat-card-header {
+            .mat-mdc-card-avatar {
+              background: linear-gradient(135deg, #1976d2, #1565c0);
+              color: white;
+            }
+            
+            mat-card-title {
+              color: #333;
+              font-weight: 600;
+            }
+          }
+          
+          mat-card-content {
+            .activity-item {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 0.75rem 0;
+              border-bottom: 1px solid #f0f0f0;
+              
+              &:last-child {
+                border-bottom: none;
+              }
+              
+              .activity-label {
+                font-weight: 500;
+                color: #666;
+              }
+              
+              .activity-value {
+                font-weight: 600;
+                font-size: 1.1rem;
+                
+                &.superadmin {
+                  color: #d32f2f;
+                }
+                
+                &.admin {
+                  color: #1976d2;
+                }
+                
+                &.student {
+                  color: #388e3c;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1400px) {
+  .dashboard-container .dashboard-content .stats-section .overview-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-container {
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+    
+    .dashboard-content .stats-section .overview-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    .dashboard-header h1 {
+      font-size: 1.5rem;
+    }
+    
+    .dashboard-content .stats-section {
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .activity-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+// Material Design Overrides
+::ng-deep {
+  .mat-mdc-card {
+    --mdc-elevated-card-container-elevation: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mat-grid-tile .mat-grid-tile-content {
+    padding: 0 !important;
+  }
+}

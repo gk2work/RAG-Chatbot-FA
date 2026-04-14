@@ -1,0 +1,164 @@
+<!-- super-admin-dashboard.component.html -->
+<div class="dashboard-container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1>SuperAdmin Dashboard</h1>
+    <div class="header-actions">
+      <span *ngIf="lastUpdated" class="last-updated">
+        Last updated: {{ lastUpdated | date:'short' }}
+      </span>
+      <button mat-raised-button color="primary" (click)="refreshData()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading dashboard statistics...</p>
+  </div>
+
+  <!-- Error State -->
+  <mat-card *ngIf="error && !loading" class="error-card">
+    <mat-card-content>
+      <mat-icon color="warn">error</mat-icon>
+      <span>{{ error }}</span>
+      <button mat-button color="primary" (click)="refreshData()">Try Again</button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="stats && !loading && !error" class="dashboard-content">
+    
+    <!-- System Overview Cards -->
+    <div class="stats-section">
+      <h2>System Overview</h2>
+      <mat-grid-list cols="5" rowHeight="140px" gutterSize="16px" class="overview-grid">
+        
+        <mat-grid-tile>
+          <mat-card class="stat-card universities">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>school</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.system_overview.total_universities }}</h3>
+                <p>Universities</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-card class="stat-card users">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>people</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.system_overview.total_users }}</h3>
+                <p>Total Users</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-card class="stat-card leads">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>contact_page</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.system_overview.total_leads }}</h3>
+                <p>Total Leads</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-card class="stat-card sessions">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>chat</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.system_overview.total_sessions }}</h3>
+                <p>Total Sessions</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-card class="stat-card active">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon>trending_up</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.system_overview.active_sessions }}</h3>
+                <p>Active Sessions</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+      </mat-grid-list>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="stats-section">
+      <h2>Recent Activity</h2>
+      <div class="activity-cards">
+        
+        <mat-card class="activity-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>today</mat-icon>
+            <mat-card-title>Today's Activity</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="activity-item">
+              <span class="activity-label">New Universities:</span>
+              <span class="activity-value">{{ stats.recent_activity.new_universities_today }}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-label">New Leads:</span>
+              <span class="activity-value">{{ stats.recent_activity.new_leads_today }}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-label">Active Sessions:</span>
+              <span class="activity-value">{{ stats.recent_activity.active_sessions_today }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="activity-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>group</mat-icon>
+            <mat-card-title>User Breakdown</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="activity-item">
+              <span class="activity-label">SuperAdmins:</span>
+              <span class="activity-value superadmin">{{ stats.user_breakdown.superadmins }}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-label">Admins:</span>
+              <span class="activity-value admin">{{ stats.user_breakdown.admins }}</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-label">Students:</span>
+              <span class="activity-value student">{{ stats.user_breakdown.students }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,203 @@
+<!-- Professional Industry-Standard Sidebar -->
+<aside class="professional-sidebar" [class.collapsed]="sidebarCollapsed">
+  
+  <!-- Sidebar Header -->
+  <header class="sidebar-header">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <div class="logo-container">
+          <!-- ✅ University Logo -->
+          <img 
+            [src]="getUniversityLogo()" 
+            [alt]="getLogoAltText()" 
+            class="university-logo"
+            (error)="onImageError($event)" />
+        </div>
+      </div>
+      <div class="brand-text" *ngIf="!sidebarCollapsed">
+        <h1 class="brand-title">{{ getUniversityName() }}</h1>
+        <p class="brand-subtitle">Admin Portal</p>
+      </div>
+    </div>
+    
+    <button class="sidebar-toggle-btn" 
+            (click)="toggleSidebar()"
+            [attr.aria-label]="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      <div class="toggle-icon" [class.rotated]="sidebarCollapsed">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      </div>
+    </button>
+  </header>
+  
+  <!-- Navigation Menu -->
+  <nav class="sidebar-navigation" role="navigation" aria-label="Main navigation">
+    
+    <!-- Main Menu Section -->
+    <div class="nav-section">
+      <div class="nav-section-label" *ngIf="!sidebarCollapsed">
+        <span>Overview</span>
+      </div>
+      
+      <ul class="nav-menu" role="menubar">
+        
+        <!-- Dashboard -->
+        <li class="nav-item" role="none">
+          <button class="nav-link" 
+                  [class.active]="activeTab === 'dashboard'" 
+                  (click)="setActiveTab('dashboard')"
+                  role="menuitem"
+                  [attr.aria-current]="activeTab === 'dashboard' ? 'page' : null">
+            <div class="nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <span class="nav-label" *ngIf="!sidebarCollapsed">Dashboard</span>
+            <div class="nav-indicator" *ngIf="activeTab === 'dashboard'"></div>
+          </button>
+        </li>
+        
+        <!-- Leads -->
+        <li class="nav-item" role="none">
+          <button class="nav-link" 
+                  [class.active]="activeTab === 'leads'" 
+                  (click)="setActiveTab('leads')"
+                  role="menuitem"
+                  [attr.aria-current]="activeTab === 'leads' ? 'page' : null">
+            <div class="nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="m22 21-3-3m0 0L16 18l3 3Z"/>
+              </svg>
+            </div>
+            <span class="nav-label" *ngIf="!sidebarCollapsed">Student Leads</span>
+            <div class="nav-badge" *ngIf="!sidebarCollapsed && totalLeads > 0">
+              <span>{{totalLeads > 99 ? '99+' : totalLeads}}</span>
+            </div>
+            <div class="nav-indicator" *ngIf="activeTab === 'leads'"></div>
+          </button>
+        </li>
+        
+        <!-- Chat Sessions -->
+        <li class="nav-item" role="none">
+          <button class="nav-link" 
+                  [class.active]="activeTab === 'sessions'" 
+                  (click)="setActiveTab('sessions')"
+                  role="menuitem"
+                  [attr.aria-current]="activeTab === 'sessions' ? 'page' : null">
+            <div class="nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+                <path d="M8 12h.01"/>
+                <path d="M12 12h.01"/>
+                <path d="M16 12h.01"/>
+              </svg>
+            </div>
+            <span class="nav-label" *ngIf="!sidebarCollapsed">Chat Sessions</span>
+            <div class="nav-badge" *ngIf="!sidebarCollapsed && totalSessions > 0">
+              <span>{{totalSessions > 99 ? '99+' : totalSessions}}</span>
+            </div>
+            <div class="nav-indicator" *ngIf="activeTab === 'sessions'"></div>
+          </button>
+        </li>
+        
+      </ul>
+    </div>
+    
+    <!-- Management Section -->
+    <div class="nav-section">
+      <div class="nav-section-label" *ngIf="!sidebarCollapsed">
+        <span>Management</span>
+      </div>
+      
+      <ul class="nav-menu" role="menubar">
+        
+        <!-- Universities -->
+        <li class="nav-item" role="none">
+          <button class="nav-link" 
+                  [class.active]="activeTab === 'universities'" 
+                  (click)="setActiveTab('universities')"
+                  role="menuitem"
+                  [attr.aria-current]="activeTab === 'universities' ? 'page' : null">
+            <div class="nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </div>
+            <span class="nav-label" *ngIf="!sidebarCollapsed">My University</span>
+            <div class="nav-badge success" *ngIf="!sidebarCollapsed && universitiesCount > 0">
+              <span>{{universitiesCount}}</span>
+            </div>
+            <div class="nav-indicator" *ngIf="activeTab === 'universities'"></div>
+          </button>
+        </li>
+        
+      </ul>
+    </div>
+    
+  </nav>
+  
+  <!-- Sidebar Footer -->
+  <footer class="sidebar-footer">
+    
+    <!-- User Profile -->
+    <div class="user-profile-card">
+      <div class="user-avatar-section">
+        <div class="user-avatar">
+          <span class="avatar-initials">AD</span>
+          <div class="avatar-status"></div>
+        </div>
+      </div>
+      
+      <div class="user-info-section" *ngIf="!sidebarCollapsed">
+        <div class="user-details">
+          <h3 class="user-name">Admin User</h3>
+          <p class="user-role">System Administrator</p>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="user-actions">
+          <button class="action-btn settings-btn" 
+                  aria-label="User settings"
+                  data-tooltip="Settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+          
+          <button class="action-btn logout-btn" 
+                  (click)="onLogout()"
+                  aria-label="Sign out"
+                  data-tooltip="Sign Out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16,17 21,12 16,7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Collapsed User Button -->
+    <button class="collapsed-user-btn" 
+            *ngIf="sidebarCollapsed"
+            (click)="onLogout()"
+            aria-label="User menu">
+      <div class="user-avatar">
+        <span class="avatar-initials">AD</span>
+        <div class="avatar-status"></div>
+      </div>
+    </button>
+    
+  </footer>
+  
+</aside>

@@ -1,0 +1,50 @@
+<!-- super-admin-sidebar.component.html -->
+<div class="sidebar-container" [class.mobile-open]="sidebarOpen">
+  <!-- Sidebar Header -->
+  <mat-toolbar class="sidebar-header">
+    <mat-icon class="sidebar-logo">admin_panel_settings</mat-icon>
+    <span class="sidebar-title">SuperAdmin</span>
+  </mat-toolbar>
+
+  <mat-divider></mat-divider>
+
+  <!-- Navigation Menu -->
+  <mat-nav-list class="sidebar-nav">
+    <mat-list-item 
+      *ngFor="let item of menuItems"
+      [class.active]="item.id === activeTab"
+      (click)="onMenuClick(item.id)">
+      
+      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+      
+      <div matListItemTitle>{{ item.label }}</div>
+      <div matListItemLine class="menu-description">{{ item.description }}</div>
+      
+      <!-- Active indicator -->
+      <div *ngIf="item.id === activeTab" class="active-indicator"></div>
+    </mat-list-item>
+  </mat-nav-list>
+
+  <mat-divider></mat-divider>
+
+  <!-- System Info -->
+  <div class="system-info">
+    <mat-list>
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <div matListItemTitle>System Status</div>
+        <div matListItemLine class="status-healthy">All systems operational</div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Footer Actions -->
+  <div class="sidebar-footer">
+    <button mat-button class="footer-button" (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </div>
+</div>

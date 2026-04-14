@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Website - Advanced Integration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero {
+            background: white;
+            color: #333;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #0c3c8c;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .demo-controls {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .demo-controls h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .control-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .control-item label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .control-item select,
+        .control-item input,
+        .control-item button {
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .control-item button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .control-item button:hover {
+            background: #0056b3;
+        }
+        
+        .control-item button.secondary {
+            background: #6c757d;
+        }
+        
+        .control-item button.secondary:hover {
+            background: #545b62;
+        }
+        
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .code-example h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .feature-card h3 {
+            color: #0c3c8c;
+            margin-bottom: 1rem;
+        }
+        
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #28a745;
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 14px;
+            z-index: 1001;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .status-bar.show {
+            transform: translateY(0);
+        }
+        
+        .chat-analytics {
+            background: #e7f3ff;
+            border: 2px solid #0066cc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .chat-analytics h4 {
+            color: #0066cc;
+            margin-top: 0;
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar" id="statusBar">
+        🤖 Chat Widget Loaded Successfully!
+    </div>
+
+    <header class="header">
+        <nav class="nav">
+            <div>
+                <h1>🎓 Advanced University Portal</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#programs">Programs</a></li>
+                <li><a href="#admissions">Admissions</a></li>
+                <li><a href="#research">Research</a></li>
+                <li><a href="#campus">Campus</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>Advanced Chat Widget Integration</h1>
+            <p>Demonstrating programmatic control, customization, and analytics</p>
+        </section>
+
+        <div class="demo-controls">
+            <h3>🎛️ Widget Controls & Customization</h3>
+            <p>Use the controls below to dynamically modify the chat widget behavior and appearance.</p>
+            
+            <div class="control-group">
+                <div class="control-item">
+                    <label for="position">Position</label>
+                    <select id="position">
+                        <option value="bottom-right">Bottom Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="top-right">Top Right</option>
+                        <option value="top-left">Top Left</option>
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <label for="size">Size</label>
+                    <select id="size">
+                        <option value="small">Small</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                
+                <div class="control-item">
+                    <label for="theme">Theme Color</label>
+                    <input type="color" id="theme" value="#0c3c8c">
+                </div>
+                
+                <div class="control-item">
+                    <label for="customText">Button Text</label>
+                    <input type="text" id="customText" placeholder="Chat with us" maxlength="20">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-item">
+                    <button onclick="openChat()">📂 Open Chat</button>
+                </div>
+                
+                <div class="control-item">
+                    <button onclick="closeChat()">❌ Close Chat</button>
+                </div>
+                
+                <div class="control-item">
+                    <button onclick="toggleWidget()" class="secondary">👁️ Toggle Visibility</button>
+                </div>
+                
+                <div class="control-item">
+                    <button onclick="resetWidget()" class="secondary">🔄 Reset Widget</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-item">
+                    <button onclick="simulateNotification()">🔔 Test Notification</button>
+                </div>
+                
+                <div class="control-item">
+                    <button onclick="getWidgetInfo()">ℹ️ Widget Info</button>
+                </div>
+                
+                <div class="control-item">
+                    <button onclick="switchUniversity()">🏛️ Switch University</button>
+                </div>
+                
+                <div class="control-item">
+                    <button onclick="exportSettings()">💾 Export Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>📝 JavaScript API Usage Example</h4>
+            <div class="code-block">// Initialize with custom configuration
+UniversityChatWidget.init({
+    university: 'csss',
+    position: 'bottom-right',
+    size: 'medium',
+    theme: '#0c3c8c',
+    showOnLoad: true,
+    pulseAnimation: true
+});
+
+// Programmatic control
+UniversityChatWidget.open();        // Open chat
+UniversityChatWidget.close();       // Close chat
+UniversityChatWidget.toggle();      // Toggle open/close
+UniversityChatWidget.show();        // Show widget
+UniversityChatWidget.hide();        // Hide widget
+
+// Get widget state
+const isOpen = UniversityChatWidget.isOpen();
+const config = UniversityChatWidget.config();</div>
+        </div>
+
+        <div class="chat-analytics">
+            <h4>📊 Real-time Chat Analytics</h4>
+            <p>Monitor widget interactions and user engagement in real-time.</p>
+            
+            <div class="analytics-grid">
+                <div class="metric">
+                    <div class="metric-value" id="openCount">0</div>
+                    <div class="metric-label">Times Opened</div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-value" id="messageCount">0</div>
+                    <div class="metric-label">Messages Sent</div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-value" id="sessionTime">0s</div>
+                    <div class="metric-label">Session Time</div>
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-value" id="responseTime">-</div>
+                    <div class="metric-label">Avg Response</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🎨 Dynamic Styling</h3>
+                <p>Customize widget appearance on-the-fly with CSS variables and JavaScript API. Change colors, positions, and sizes without page reload.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📱 Responsive Design</h3>
+                <p>Automatically adapts to desktop and mobile devices. Full-screen modal on mobile, positioned overlay on desktop.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🔔 Smart Notifications</h3>
+                <p>Subtle notification indicators when new messages arrive while chat is closed. Configurable pulse animations and sounds.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🔒 Security First</h3>
+                <p>Iframe sandboxing, CSP headers, and secure cross-domain messaging ensure your website's security is never compromised.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>⚡ Performance Optimized</h3>
+                <p>Lazy loading, minimal footprint (&lt;100KB), CDN delivery, and smart caching for lightning-fast loading times.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📈 Analytics Integration</h3>
+                <p>Built-in analytics tracking, Google Analytics integration, and custom event reporting for detailed insights.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- University Chatbot Widget - Advanced Integration -->
+    <script src="../widget-loader.js"></script>
+
+    <script>
+        // Advanced Integration Demo Script
+        let analytics = {
+            openCount: 0,
+            messageCount: 0,
+            sessionStart: null,
+            responseTimes: []
+        };
+
+        // Initialize widget with advanced configuration
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎓 Advanced University Website Loaded');
+            
+            // Show status bar briefly
+            const statusBar = document.getElementById('statusBar');
+            statusBar.classList.add('show');
+            setTimeout(() => statusBar.classList.remove('show'), 3000);
+            
+            // Initialize chat widget
+            UniversityChatWidget.init({
+                university: 'csss',
+                position: 'bottom-right',
+                size: 'medium',
+                theme: '#0c3c8c',
+                showOnLoad: true,
+                pulseAnimation: true,
+                soundEnabled: false
+            });
+            
+            // Set up event listeners for controls
+            setupControlListeners();
+            
+            // Set up analytics tracking
+            setupAnalytics();
+        });
+
+        // Control event listeners
+        function setupControlListeners() {
+            document.getElementById('position').addEventListener('change', updatePosition);
+            document.getElementById('size').addEventListener('change', updateSize);
+            document.getElementById('theme').addEventListener('change', updateTheme);
+            document.getElementById('customText').addEventListener('input', updateText);
+        }
+
+        // Analytics setup
+        function setupAnalytics() {
+            window.addEventListener('message', function(event) {
+                const data = event.data;
+                
+                switch (data.type) {
+                    case 'widget_opened':
+                        analytics.openCount++;
+                        analytics.sessionStart = Date.now();
+                        updateAnalyticsDisplay();
+                        console.log('📊 Analytics: Widget opened');
+                        break;
+                        
+                    case 'widget_closed':
+                        if (analytics.sessionStart) {
+                            const sessionTime = Math.round((Date.now() - analytics.sessionStart) / 1000);
+                            document.getElementById('sessionTime').textContent = sessionTime + 's';
+                        }
+                        console.log('📊 Analytics: Widget closed');
+                        break;
+                        
+                    case 'message_sent':
+                        analytics.messageCount++;
+                        updateAnalyticsDisplay();
+                        console.log('📊 Analytics: Message sent');
+                        break;
+                        
+                    case 'message_received':
+                        if (data.responseTime) {
+                            analytics.responseTimes.push(data.responseTime);
+                            const avgResponse = analytics.responseTimes.reduce((a, b) => a + b, 0) / analytics.responseTimes.length;
+                            document.getElementById('responseTime').textContent = Math.round(avgResponse) + 'ms';
+                        }
+                        console.log('📊 Analytics: Message received');
+                        break;
+                }
+            });
+        }
+
+        // Update analytics display
+        function updateAnalyticsDisplay() {
+            document.getElementById('openCount').textContent = analytics.openCount;
+            document.getElementById('messageCount').textContent = analytics.messageCount;
+        }
+
+        // Control functions
+        function updatePosition() {
+            const position = document.getElementById('position').value;
+            // Note: This would require widget API enhancement to change position dynamically
+            console.log('🎛️ Position changed to:', position);
+        }
+
+        function updateSize() {
+            const size = document.getElementById('size').value;
+            console.log('🎛️ Size changed to:', size);
+        }
+
+        function updateTheme() {
+            const color = document.getElementById('theme').value;
+            console.log('🎛️ Theme changed to:', color);
+            // Update CSS custom property
+            document.documentElement.style.setProperty('--uc-primary-color', color);
+        }
+
+        function updateText() {
+            const text = document.getElementById('customText').value;
+            console.log('🎛️ Text changed to:', text);
+        }
+
+        // Widget control functions
+        function openChat() {
+            UniversityChatWidget.open();
+            console.log('📂 Programmatically opened chat');
+        }
+
+        function closeChat() {
+            UniversityChatWidget.close();
+            console.log('❌ Programmatically closed chat');
+        }
+
+        function toggleWidget() {
+            if (UniversityChatWidget.isOpen()) {
+                UniversityChatWidget.close();
+            } else {
+                UniversityChatWidget.open();
+            }
+            console.log('👁️ Toggled widget visibility');
+        }
+
+        function resetWidget() {
+            UniversityChatWidget.close();
+            setTimeout(() => {
+                // Reset analytics
+                analytics = {
+                    openCount: 0,
+                    messageCount: 0,
+                    sessionStart: null,
+                    responseTimes: []
+                };
+                updateAnalyticsDisplay();
+                document.getElementById('sessionTime').textContent = '0s';
+                document.getElementById('responseTime').textContent = '-';
+                console.log('🔄 Widget reset');
+            }, 300);
+        }
+
+        function simulateNotification() {
+            // Simulate receiving a message notification
+            window.postMessage({
+                type: 'new_message_notification',
+                content: 'Hello! How can I help you today?'
+            }, '*');
+            console.log('🔔 Simulated notification');
+        }
+
+        function getWidgetInfo() {
+            const config = UniversityChatWidget.config();
+            const isOpen = UniversityChatWidget.isOpen();
+            
+            alert(`Widget Info:
+📍 Position: ${config.position}
+📏 Size: ${config.size}
+🎨 Theme: ${config.theme}
+🏛️ University: ${config.university}
+📂 Status: ${isOpen ? 'Open' : 'Closed'}
+🔢 Opens: ${analytics.openCount}
+💬 Messages: ${analytics.messageCount}`);
+        }
+
+        function switchUniversity() {
+            const universities = ['csss', 'mit', 'harvard', 'stanford'];
+            const current = UniversityChatWidget.config().university;
+            const currentIndex = universities.indexOf(current);
+            const nextIndex = (currentIndex + 1) % universities.length;
+            const nextUniversity = universities[nextIndex];
+            
+            console.log(`🏛️ Switching from ${current} to ${nextUniversity}`);
+            // Note: This would require widget API enhancement to switch university dynamically
+        }
+
+        function exportSettings() {
+            const config = UniversityChatWidget.config();
+            const settings = {
+                config: config,
+                analytics: analytics,
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chat-widget-settings.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('💾 Settings exported');
+        }
+
+        // Demo: Simulate some activity
+        setTimeout(() => {
+            console.log('🎭 Demo: Simulating widget interaction in 5 seconds...');
+        }, 5000);
+
+        // Demo: Auto-show notification after 10 seconds
+        setTimeout(() => {
+            simulateNotification();
+        }, 10000);
+    </script>
+</body>
+</html>

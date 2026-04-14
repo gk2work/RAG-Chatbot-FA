@@ -1,0 +1,96 @@
+<div class="file-upload-container">
+  
+  <!-- Hidden file input -->
+  <input 
+    type="file" 
+    id="file-input" 
+    [accept]="acceptedTypes" 
+    (change)="onFileSelected($event)"
+    style="display: none;">
+
+  <!-- Upload Area -->
+  <div 
+    class="upload-area"
+    [class.drag-over]="isDragOver"
+    [class.uploading]="isUploading"
+    [class.has-preview]="previewImageUrl"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="triggerFileInput()">
+
+    <!-- Preview Image -->
+    <div *ngIf="previewImageUrl && !isUploading" class="image-preview">
+      <img [src]="previewImageUrl" alt="Preview" class="preview-image">
+      <div class="preview-overlay">
+        <button mat-icon-button (click)="removeImage(); $event.stopPropagation()" class="remove-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+        <button mat-icon-button (click)="triggerFileInput(); $event.stopPropagation()" class="edit-btn">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Content -->
+    <div *ngIf="!previewImageUrl || isUploading" class="upload-content">
+      
+      <!-- Upload Icon -->
+      <div class="upload-icon">
+        <mat-icon *ngIf="!isUploading && !isDragOver">cloud_upload</mat-icon>
+        <mat-icon *ngIf="isDragOver && !isUploading">file_download</mat-icon>
+        <mat-icon *ngIf="isUploading" class="spinning">refresh</mat-icon>
+      </div>
+
+      <!-- Upload Text -->
+      <div class="upload-text">
+        <h4 *ngIf="!isUploading && !isDragOver">{{ placeholder }}</h4>
+        <h4 *ngIf="isDragOver && !isUploading">Drop your file here</h4>
+        <h4 *ngIf="isUploading">Uploading... {{ uploadProgressValue }}%</h4>
+        
+        <p *ngIf="!isUploading">
+          <span class="file-types">Supported: PNG, JPG, SVG</span>
+          <span class="file-size">Max size: {{ (maxFileSize / 1024 / 1024) | number:'1.0-0' }}MB</span>
+        </p>
+      </div>
+
+      <!-- Browse Button -->
+      <button 
+        *ngIf="!isUploading" 
+        mat-raised-button 
+        color="primary" 
+        (click)="triggerFileInput(); $event.stopPropagation()">
+        <mat-icon>folder_open</mat-icon>
+        Browse Files
+      </button>
+
+      <!-- Progress Bar -->
+      <div *ngIf="isUploading" class="progress-container">
+        <mat-progress-bar 
+          mode="determinate" 
+          [value]="uploadProgressValue"
+          color="primary">
+        </mat-progress-bar>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Upload Instructions -->
+  <div class="upload-instructions" *ngIf="!previewImageUrl">
+    <div class="instruction-item">
+      <mat-icon>info</mat-icon>
+      <span>For best results, use a transparent PNG logo</span>
+    </div>
+    <div class="instruction-item">
+      <mat-icon>crop_square</mat-icon>
+      <span>Recommended size: 200x200px or larger</span>
+    </div>
+    <div class="instruction-item">
+      <mat-icon>palette</mat-icon>
+      <span>Logo will be resized automatically if needed</span>
+    </div>
+  </div>
+
+</div>

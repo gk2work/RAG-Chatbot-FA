@@ -1,0 +1,63 @@
+<div class="demo-container">
+  <h1>🎓 University Website - Chatbot Integration Demo</h1>
+  
+  <div class="test-panel">
+    <h2>💬 Need Help? Try Our AI Assistant!</h2>
+    <p>Welcome to our university website! Our AI-powered chatbot is available 24/7 to help you with:</p>
+    <ul>
+      <li>📚 Program information and course details</li>
+      <li>🎯 Admission requirements and deadlines</li>
+      <li>🏫 Campus facilities and student life</li>
+      <li>💼 Career services and job placement</li>
+      <li>🌍 Study abroad opportunities</li>
+    </ul>
+    
+    <div class="highlight-box">
+      <h3>🤖 How to Use the Chat Widget</h3>
+      <p><strong>Look for the floating chat button in the bottom-right corner!</strong></p>
+      <p>Click it to start a conversation with our AI assistant.</p>
+    </div>
+
+    <h2>📊 Widget Status</h2>
+    <div id="angularStatus" class="status warning">🟡 Checking Chatbot Service...</div>
+    <div id="widgetStatus" class="status warning">🟡 Checking Widget...</div>
+    <div id="urlStatus" class="status warning">🟡 Checking Connection...</div>
+    
+    <h3>🧪 Widget Controls</h3>
+    <button (click)="testAngularServer()">Check Service</button>
+    <button (click)="testWidgetAPI()">Test Widget</button>
+    <button (click)="testIframe()">Test Chat</button>
+    <button (click)="clearLog()">Clear Log</button>
+    
+    <h3>📝 Activity Log</h3>
+    <div id="debugLog" class="log">Widget loading...\n</div>
+  </div>
+  
+  <div class="test-panel">
+    <h2>🎓 About Our University</h2>
+    <p>We are a leading institution dedicated to providing world-class education and fostering innovation. Our programs span across multiple disciplines, ensuring comprehensive learning experiences for all our students.</p>
+    
+    <h3>Academic Excellence</h3>
+    <p>Choose from our wide range of undergraduate and graduate programs designed to prepare you for success in your chosen field.</p>
+    
+    <h3>Campus Life</h3>
+    <p>Experience a vibrant campus community with state-of-the-art facilities, diverse student organizations, and endless opportunities for personal growth.</p>
+    
+    <h3>Research & Innovation</h3>
+    <p>Join our world-renowned faculty in groundbreaking research that addresses global challenges and drives innovation across various fields.</p>
+    
+    <div class="tip-box">
+      <h4>💡 Quick Tip</h4>
+      <p>Use the controls above to test the widget functionality, or simply click the floating chat button to start a conversation!</p>
+    </div>
+  </div>
+  
+  <div class="test-panel">
+    <h2>🖼️ Chat Interface Preview</h2>
+    <p>Direct preview of the chatbot interface:</p>
+    <div class="iframe-test">
+      <iframe id="directIframe" [src]="getIframeSrc()" title="Chat Interface Preview"></iframe>
+    </div>
+    <p><em>This preview shows how the chat interface appears when embedded in the widget.</em></p>
+  </div>
+</div>

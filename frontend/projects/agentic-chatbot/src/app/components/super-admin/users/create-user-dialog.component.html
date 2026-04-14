@@ -1,0 +1,119 @@
+<!-- create-user-dialog.component.html -->
+<h2 mat-dialog-title>
+  <mat-icon>person_add</mat-icon>
+  Create New User
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="userForm" class="create-form">
+    
+    <!-- Personal Information Section -->
+    <div class="form-section">
+      <h3>Personal Information</h3>
+      
+      <div class="name-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="first_name" placeholder="Enter first name">
+          <mat-error *ngIf="userForm.get('first_name')?.hasError('required')">
+            First name is required
+          </mat-error>
+          <mat-error *ngIf="userForm.get('first_name')?.hasError('minlength')">
+            First name must be at least 2 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="last_name" placeholder="Enter last name">
+          <mat-error *ngIf="userForm.get('last_name')?.hasError('required')">
+            Last name is required
+          </mat-error>
+          <mat-error *ngIf="userForm.get('last_name')?.hasError('minlength')">
+            Last name must be at least 2 characters
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email Address</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter email address">
+        <mat-hint>This will be used for login</mat-hint>
+        <mat-error>{{ emailError }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="Enter password">
+        <mat-hint>Minimum 6 characters required</mat-hint>
+        <mat-error>{{ passwordError }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Role and Access Section -->
+    <div class="form-section">
+      <h3>Role and Access</h3>
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>User Role</mat-label>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let role of roles" [value]="role.value">
+            <div class="role-option">
+              <strong>{{ role.label }}</strong>
+              <span class="role-description">{{ role.description }}</span>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-hint>Determines user permissions and access level</mat-hint>
+      </mat-form-field>
+
+      <!-- University Selection (only for admin role) -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="isAdminRole">
+  <mat-label>Assign to University</mat-label>
+  <mat-select formControlName="university_x_id">
+    <mat-option value="">Select University</mat-option>
+    <mat-option *ngFor="let university of universities" [value]="university.x_id">
+      <div class="university-option">
+        <strong>{{ university.name }}</strong>
+        <span class="university-code">({{ university.code }})</span>
+      </div>
+    </mat-option>
+  </mat-select>
+  <mat-hint>Admin users must be assigned to a specific university</mat-hint>
+  <mat-error *ngIf="userForm.get('university_x_id')?.hasError('required')">
+    University assignment is required for admin users
+     </mat-error>
+    </mat-form-field>
+
+      <!-- Role Information -->
+      <div class="role-info" *ngIf="userForm.get('role')?.value">
+        <div class="info-card" [ngClass]="'info-' + userForm.get('role')?.value">
+          <mat-icon>{{ userForm.get('role')?.value === 'admin' ? 'manage_accounts' : 'school' }}</mat-icon>
+          <div class="info-content">
+            <strong>{{ userForm.get('role')?.value === 'admin' ? 'Admin User' : 'Student User' }}</strong>
+            <p *ngIf="userForm.get('role')?.value === 'admin'">
+              Can manage university settings, view reports, and handle student inquiries.
+            </p>
+            <p *ngIf="userForm.get('role')?.value === 'student'">
+              Can access chat features and university information.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="creating">
+    Cancel
+  </button>
+  <button mat-raised-button color="primary" 
+          (click)="onCreate()" 
+          [disabled]="userForm.invalid || creating">
+    <mat-icon *ngIf="!creating">person_add</mat-icon>
+    <mat-icon *ngIf="creating" class="spinning">refresh</mat-icon>
+    {{ creating ? 'Creating User...' : 'Create User' }}
+  </button>
+</mat-dialog-actions>

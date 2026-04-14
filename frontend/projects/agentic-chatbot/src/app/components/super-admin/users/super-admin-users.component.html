@@ -1,0 +1,194 @@
+<!-- super-admin-users.component.html -->
+<div class="users-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Users Management</h1>
+      <p>Manage users, roles, and permissions across all universities</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="onCreateUser()">
+        <mat-icon>person_add</mat-icon>
+        Create User
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <mat-card class="filters-card">
+      <mat-card-content>
+        <div class="filters-row">
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Filter by Role</mat-label>
+            <mat-select [(value)]="selectedRoleFilter" (selectionChange)="onRoleFilterChange()">
+              <mat-option *ngFor="let filter of roleFilters" [value]="filter.value">
+                {{ filter.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Filter by Status</mat-label>
+            <mat-select [(value)]="selectedStatusFilter" (selectionChange)="onStatusFilterChange()">
+              <mat-option *ngFor="let filter of statusFilters" [value]="filter.value">
+                {{ filter.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="filter-info">
+            <span class="result-count">
+              Showing {{ filteredUsers.length }} of {{ users.length }} users
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading users...</p>
+  </div>
+
+  <!-- Error State -->
+  <mat-card *ngIf="error && !loading" class="error-card">
+    <mat-card-content>
+      <mat-icon color="warn">error</mat-icon>
+      <span>{{ error }}</span>
+      <button mat-button color="primary" (click)="loadUsers()">Retry</button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Users Table -->
+  <mat-card *ngIf="!loading && !error" class="table-card">
+    <mat-card-header>
+      <mat-card-title>All Users ({{ filteredUsers.length }})</mat-card-title>
+      <mat-card-subtitle>Manage user accounts and permissions</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="filteredUsers" class="users-table">
+          
+          <!-- User Column -->
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>User</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-info">
+                <div class="user-avatar">
+                  <mat-icon>account_circle</mat-icon>
+                </div>
+                <div class="user-details">
+                  <strong>{{ user.profile?.first_name }} {{ user.profile?.last_name }}</strong>
+                  <span class="email">{{ user.email }}</span>
+                  <span class="phone" *ngIf="user.profile?.phone">{{ user.profile.phone }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Role Column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip-set>
+                <mat-chip [class]="'role-chip-' + user.role">
+                  <mat-icon *ngIf="user.role === 'superadmin'">admin_panel_settings</mat-icon>
+                  <mat-icon *ngIf="user.role === 'admin'">manage_accounts</mat-icon>
+                  <mat-icon *ngIf="user.role === 'student'">school</mat-icon>
+                  {{ user.role | titlecase }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- University Column -->
+          <ng-container matColumnDef="university">
+            <th mat-header-cell *matHeaderCellDef>University</th>
+            <td mat-cell *matCellDef="let user">
+              <!-- ✅ ENHANCED: Better handling of university assignments -->
+              <div *ngIf="user.university_name && user.university_name !== 'All Universities'; else defaultUniversity" 
+                   class="university-info">
+                <mat-icon class="university-icon">school</mat-icon>
+                <div class="university-details">
+                  <span class="university-name">{{ user.university_name }}</span>
+                  <span *ngIf="user.university_code" class="university-code">({{ user.university_code }})</span>
+                </div>
+              </div>
+              <ng-template #defaultUniversity>
+                <div class="default-university" 
+                     [ngClass]="{
+                       'superadmin-access': user.role === 'superadmin',
+                       'unassigned': user.role !== 'superadmin'
+                     }">
+                  <mat-icon [class]="user.role === 'superadmin' ? 'all-access-icon' : 'unassigned-icon'">
+                    {{ user.role === 'superadmin' ? 'admin_panel_settings' : 'help_outline' }}
+                  </mat-icon>
+                  <span>{{ user.role === 'superadmin' ? 'All Universities' : 'Unassigned' }}</span>
+                </div>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip-set>
+                <mat-chip [class]="user.is_active ? 'status-active' : 'status-inactive'">
+                  <mat-icon>{{ user.is_active ? 'check_circle' : 'cancel' }}</mat-icon>
+                  {{ user.is_active ? 'Active' : 'Inactive' }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- Last Login Column -->
+          <ng-container matColumnDef="lastLogin">
+            <th mat-header-cell *matHeaderCellDef>Last Login</th>
+            <td mat-cell *matCellDef="let user">
+              <div *ngIf="user.last_login; else neverLoggedIn" class="login-info">
+                <mat-icon>access_time</mat-icon>
+                <span>{{ user.last_login | date:'short' }}</span>
+              </div>
+              <ng-template #neverLoggedIn>
+                <span class="never-logged-in">Never</span>
+              </ng-template>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="action-buttons">
+                <button mat-icon-button 
+                        matTooltip="View Details"
+                        (click)="onViewUserDetails(user)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button 
+                        matTooltip="Edit User"
+                        (click)="onEditUser(user)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button 
+                        [matTooltip]="user.is_active ? 'Deactivate User' : 'Reactivate User'"
+                        [class]="user.is_active ? 'deactivate-btn' : 'reactivate-btn'"
+                        (click)="onToggleUserStatus(user)">
+                  <mat-icon>{{ user.is_active ? 'block' : 'check_circle' }}</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

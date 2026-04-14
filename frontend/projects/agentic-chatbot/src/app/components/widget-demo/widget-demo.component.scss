@@ -1,0 +1,331 @@
+.demo-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  height: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-bottom: 120px; // Extra space for floating button
+  position: relative;
+
+  h1 {
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    margin-top: 20px;
+  }
+}
+
+.test-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  margin: 20px 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+
+  h2 {
+    color: #4a5568;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    color: #2d3748;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+
+  ul {
+    padding-left: 20px;
+    
+    li {
+      margin: 12px 0;
+      line-height: 1.7;
+      color: #4a5568;
+      font-size: 1.05rem;
+    }
+  }
+
+  p {
+    line-height: 1.7;
+    color: #4a5568;
+    margin: 15px 0;
+    font-size: 1.05rem;
+  }
+}
+
+.status {
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin: 15px 0;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &.success { 
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724; 
+    border: 1px solid #c3e6cb;
+    box-shadow: 0 4px 12px rgba(21, 87, 36, 0.1);
+  }
+  
+  &.error { 
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24; 
+    border: 1px solid #f5c6cb;
+    box-shadow: 0 4px 12px rgba(114, 28, 36, 0.1);
+  }
+  
+  &.warning { 
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404; 
+    border: 1px solid #ffeaa7;
+    box-shadow: 0 4px 12px rgba(133, 100, 4, 0.1);
+  }
+}
+
+.iframe-test {
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1rem 0;
+
+  iframe {
+    width: 100%;
+    height: 400px;
+    border: none;
+    display: block;
+  }
+}
+
+button {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  margin: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover { 
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  &:disabled {
+    background: linear-gradient(135deg, #cbd5e0, #a0aec0);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.log {
+  background: linear-gradient(135deg, #1a202c, #2d3748);
+  color: #68d391;
+  padding: 20px;
+  border-radius: 12px;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  max-height: 250px;
+  overflow-y: auto;
+  margin: 15px 0;
+  white-space: pre-wrap;
+  border: 1px solid #4a5568;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #2d3748;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #718096;
+    }
+  }
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+  padding: 25px;
+  border-radius: 16px;
+  margin: 25px 0;
+  border-left: 6px solid #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+
+  h3 {
+    margin-top: 0;
+    color: #2b6cb0;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 0;
+    color: #2c5282;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+
+  strong {
+    color: #2a69ac;
+    font-weight: 700;
+  }
+}
+
+.tip-box {
+  background: linear-gradient(135deg, #fefcbf, #faf089);
+  padding: 25px;
+  border-radius: 16px;
+  margin: 25px 0;
+  border-left: 6px solid #ecc94b;
+  box-shadow: 0 4px 16px rgba(236, 201, 75, 0.2);
+
+  h4 {
+    margin-top: 0;
+    color: #975a16;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 0;
+    color: #975a16;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .demo-container {
+    padding: 15px;
+    padding-bottom: 120px;
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+  }
+
+  .test-panel {
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+  }
+
+  .iframe-test iframe {
+    height: 350px;
+  }
+
+  button {
+    display: block;
+    width: calc(100% - 16px);
+    margin: 10px 0;
+    padding: 14px 20px;
+    font-size: 16px;
+  }
+
+  .status {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .log {
+    max-height: 200px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .demo-container {
+    padding: 10px;
+    
+    h1 {
+      font-size: 1.6rem;
+    }
+  }
+
+  .test-panel {
+    padding: 15px;
+    margin: 10px 0;
+  }
+
+  .iframe-test iframe {
+    height: 300px;
+  }
+}
+
+// Global scrolling fix
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+// Ensure body and html are scrollable
+:host ::ng-deep body,
+:host ::ng-deep html {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
+// Scrollbar styling for the main container
+.demo-container {
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+}

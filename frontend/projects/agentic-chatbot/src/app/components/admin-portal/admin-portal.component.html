@@ -1,0 +1,287 @@
+<div class="admin-portal">
+  
+<!-- Mobile sidebar overlay backdrop -->
+<div class="sidebar-overlay" 
+     [class.active]="sidebarOpen" 
+     (click)="closeSidebar()"
+     *ngIf="isMobileView"></div>
+
+<app-sidebar 
+  [sidebarCollapsed]="sidebarCollapsed"
+  [class.open]="sidebarOpen"
+  [activeTab]="activeTab"
+  [totalLeads]="totalLeads"
+  [totalSessions]="totalSessions"
+  [universitiesCount]="universities.length"
+  (tabChange)="onTabChange($event)"
+  (sidebarToggle)="onSidebarToggle()"
+  (logoutRequested)="onLogout()">
+</app-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content" [class.expanded]="sidebarCollapsed">
+    <!-- Top Header -->
+    <app-navbar 
+  [pageTitle]="getPageTitle()"
+  [loading]="loading"
+  [todaySessions]="todaySessions"
+  [showMobileMenu]="isMobileView"
+  (refreshClick)="onRefreshClick()"
+  (mobileMenuToggle)="onSidebarToggle()">
+</app-navbar>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="loading">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="loading-text">Loading dashboard data...</div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error && !loading">
+      <div class="error-content">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <div>
+          <h3>Something went wrong</h3>
+          <p>{{error}}</p>
+        </div>
+        <button (click)="refreshData()">Try Again</button>
+      </div>
+    </div>
+
+  <!-- Dashboard Tab -->
+<app-dashboard 
+  *ngIf="activeTab === 'dashboard'"
+  [totalLeads]="totalLeads"
+  [totalSessions]="totalSessions"
+  [totalDocuments]="totalDocuments"
+  [todaySessions]="todaySessions"
+  [categorizationStats]="categorizationStats"
+  (tabChange)="onDashboardTabChange($event)"
+  (exportLeads)="onDashboardExportLeads()">
+</app-dashboard>
+
+
+<!-- Leads Tab -->
+<app-leads 
+  *ngIf="activeTab === 'leads'"
+  [leads]="leads"
+  [searchTerm]="searchTerm"
+  (leadSelect)="onLeadSelect($event)"
+  (exportLeads)="onLeadsExport()"
+  (searchTermChange)="onLeadSearchChange($event)"
+  (categorizationUpdate)="updateLeadCategorization($event.leadId, $event.leadType, $event.notes)">
+</app-leads>
+
+<!-- Sessions Tab -->
+<app-chat-session 
+  *ngIf="activeTab === 'sessions'"
+  [chatSessions]="chatSessions"
+  [searchTerm]="searchTerm"
+  (sessionSelect)="onSessionSelect($event)"
+  (exportSessions)="onSessionsExport()"
+  (searchTermChange)="onSessionSearchChange($event)">
+</app-chat-session>
+
+<!-- Universities Tab -->
+<app-universities 
+  *ngIf="activeTab === 'universities'"
+  [universities]="universities"
+  [leads]="leads"
+  [chatSessions]="chatSessions"
+  (manageDocuments)="onManageUniversityDocuments($event)"
+  (loadStats)="onLoadUniversityStats($event)">
+</app-universities>
+
+
+  <!-- Modern Lead Modal -->
+  <div class="modal-overlay" *ngIf="selectedLead" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="lead-avatar large">{{selectedLead.name.charAt(0).toUpperCase()}}</div>
+          <div>
+            <h2>{{selectedLead.name}}</h2>
+            <p>Lead Details & Chat History</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <div class="lead-details-grid">
+          <div class="detail-card">
+            <div class="detail-label">Email</div>
+            <div class="detail-value">{{selectedLead.email}}</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">Country</div>
+            <div class="detail-value">{{selectedLead.country}}</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">Mobile</div>
+            <div class="detail-value">{{selectedLead.mobile || 'Not provided'}}</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">University</div>
+            <div class="detail-value">
+              <span class="university-badge">{{selectedLead.university_code.toUpperCase()}}</span>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">Registration</div>
+            <div class="detail-value">{{formatDate(selectedLead.created_at)}}</div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-label">Chat Sessions</div>
+            <div class="detail-value">{{selectedLead.live_chat_summaries?.length || 0}}</div>
+          </div>
+        </div>
+
+        <!-- Chat History -->
+        <div class="chat-history" *ngIf="selectedLead.live_chat_summaries && selectedLead.live_chat_summaries.length > 0">
+          <h3>Chat History</h3>
+          <div class="chat-timeline">
+            <div class="chat-item" *ngFor="let chat of selectedLead.live_chat_summaries; let i = index">
+              <div class="chat-timestamp">
+                <div class="timestamp-dot"></div>
+                <span>{{formatDate(chat.timestamp)}}</span>
+              </div>
+              <div class="chat-messages">
+                <div class="message user-message">
+                  <div class="message-header">
+                    <span class="message-sender">{{selectedLead.name}}</span>
+                    <span class="message-type">Question</span>
+                  </div>
+                  <div class="message-content">{{chat.user_message}}</div>
+                </div>
+                <div class="message assistant-message">
+                  <div class="message-header">
+                    <span class="message-sender">AI Assistant</span>
+                    <span class="message-type">Response</span>
+                  </div>
+                  <div class="message-content" [innerHTML]="chat.assistant_response | markdown"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Chat History -->
+        <div class="no-chat-history" *ngIf="!selectedLead.live_chat_summaries || selectedLead.live_chat_summaries.length === 0">
+          <div class="empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M21 15A2 2 0 0 1 19 17H7L4 20V5A2 2 0 0 1 6 3H19A2 2 0 0 1 21 5V15Z"/>
+            </svg>
+          </div>
+          <h3>No chat history yet</h3>
+          <p>This lead hasn't engaged in any conversations.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn secondary" (click)="closeModal()">Close</button>
+        <button class="btn primary">Export Lead Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern Session Modal -->
+  <div class="modal-overlay" *ngIf="selectedSession" (click)="closeModal()">
+    <div class="modal-container large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <div class="session-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15A2 2 0 0 1 19 17H7L4 20V5A2 2 0 0 1 6 3H19A2 2 0 0 1 21 5V15Z"/>
+            </svg>
+          </div>
+          <div>
+            <h2>Chat Session #{{selectedSession._id.slice(-6)}}</h2>
+            <p>{{selectedSession.lead_name || 'Anonymous'}} • {{getSessionDuration(selectedSession)}}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <div class="session-meta">
+          <div class="meta-item">
+            <span class="meta-label">Lead</span>
+            <span class="meta-value">{{selectedSession.lead_name || 'Anonymous'}}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">University</span>
+            <span class="meta-value">
+              <span class="university-badge">{{selectedSession.university_code.toUpperCase()}}</span>
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Messages</span>
+            <span class="meta-value">{{selectedSession.message_count}}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Status</span>
+            <span class="meta-value">
+              <span class="status-badge" [class.active]="selectedSession.is_active">
+                {{selectedSession.is_active ? 'Active' : 'Completed'}}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div class="topics-section" *ngIf="selectedSession.topics && selectedSession.topics.length > 0">
+          <h4>Topics Discussed</h4>
+          <div class="topics-list">
+            <span class="topic-tag" *ngFor="let topic of selectedSession.topics">{{topic}}</span>
+          </div>
+        </div>
+
+        <div class="chat-messages-section">
+          <h4>Conversation</h4>
+          <div class="chat-container">
+            <div class="chat-message" 
+                 *ngFor="let message of selectedSession.messages"
+                 [class.user-msg]="message.type === 'user'"
+                 [class.assistant-msg]="message.type === 'assistant'">
+              <div class="message-avatar" *ngIf="message.type === 'assistant'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+                  <path d="M2 17L12 22L22 17"/>
+                  <path d="M2 12L12 17L22 12"/>
+                </svg>
+              </div>
+              <div class="message-avatar" *ngIf="message.type === 'user'">
+                {{(selectedSession.lead_name || 'U').charAt(0).toUpperCase()}}
+              </div>
+              <div class="message-bubble">
+                <div class="message-content">{{message.content}}</div>
+                <div class="message-time">{{formatDate(message.timestamp)}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn secondary" (click)="closeModal()">Close</button>
+        <button class="btn primary">Export Conversation</button>
+      </div>
+    </div>
+  </div>
+</div>

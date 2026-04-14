@@ -1,0 +1,43 @@
+.edit-user-dialog {
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .role-info {
+    margin-top: 16px;
+    
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      
+      &.info-admin {
+        background-color: #e3f2fd;
+        border-left: 4px solid #1976d2;
+      }
+      
+      &.info-student {
+        background-color: #f3e5f5;
+        border-left: 4px solid #7b1fa2;
+      }
+    }
+  }
+
+  .spinning {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+}

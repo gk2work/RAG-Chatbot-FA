@@ -1,0 +1,310 @@
+<div class="table-content">
+  <!-- NEW: Category Filter Buttons -->
+  <div class="category-filters">
+    <button 
+      *ngFor="let category of categoryOptions"
+      class="category-btn"
+      [class.active]="selectedCategory === category.value"
+      [class.category-hot]="category.value === 'hot'"
+      [class.category-cold]="category.value === 'cold'"
+      [class.category-not-defined]="category.value === 'not_defined'"
+      (click)="onCategoryFilterChange(category.value)">
+      {{ category.label }}
+      <span class="count">{{ category.count }}</span>
+    </button>
+  </div>
+
+  <div class="content-header">
+    <div class="header-actions">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Search leads</mat-label>
+        <input matInput 
+               placeholder="Search by name, email, or university..."
+               [(ngModel)]="searchTerm"
+               (ngModelChange)="onSearchChange()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      
+      <button mat-raised-button color="primary" (click)="onExportLeads()">
+        <mat-icon>download</mat-icon>
+        Export Leads
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="leads-table">
+      <!-- Avatar and Name Column (unchanged) -->
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef>Lead</th>
+        <td mat-cell *matCellDef="let lead">
+          <div class="lead-info">
+            <div class="lead-avatar">{{lead.name.charAt(0).toUpperCase()}}</div>
+            <div class="lead-details">
+              <div class="lead-name">{{lead.name}}</div>
+              <div class="lead-id">ID: {{lead._id.slice(-6)}}</div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email Column (unchanged) -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let lead">{{lead.email}}</td>
+      </ng-container>
+
+      <!-- Country Column (unchanged) -->
+      <ng-container matColumnDef="country">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
+        <td mat-cell *matCellDef="let lead">{{lead.country}}</td>
+      </ng-container>
+
+      <!-- University Column (unchanged) -->
+      <ng-container matColumnDef="university">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>University</th>
+        <td mat-cell *matCellDef="let lead">
+          <mat-chip-set>
+            <mat-chip>{{lead.university_code.toUpperCase()}}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <!-- Sessions Column (unchanged) -->
+      <ng-container matColumnDef="sessions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Sessions</th>
+        <td mat-cell *matCellDef="let lead">
+          <mat-chip [matBadge]="lead.live_chat_summaries?.length || 0" matBadgeColor="accent">
+            {{lead.live_chat_summaries?.length || 0}} sessions
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- NEW: Category Column -->
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let lead">
+          <span [class]="getLeadTypeBadgeClass(lead.lead_type)">
+            {{ getLeadTypeDisplay(lead.lead_type) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Created Date Column (unchanged) -->
+      <ng-container matColumnDef="created">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+        <td mat-cell *matCellDef="let lead">{{formatDate(lead.created_at).split(',')[0]}}</td>
+      </ng-container>
+
+      <!-- UPDATED: Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let lead">
+          <div class="lead-actions">
+            <!-- View Details Button (keep existing) -->
+            <button mat-icon-button color="primary" (click)="selectLead(lead)" matTooltip="View Details">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            
+            <!-- NEW: Categorize Button -->
+            <button mat-icon-button (click)="openCategorizationModal(lead)" matTooltip="Categorize Lead">
+              <mat-icon>label</mat-icon>
+            </button>
+            
+            <!-- NEW: Quick Hot Button -->
+            <button 
+              mat-icon-button 
+              color="warn"
+              (click)="quickCategorizeAsHot(lead)"
+              matTooltip="Mark as Hot Lead"
+              *ngIf="lead.lead_type !== 'hot'">
+              <mat-icon>local_fire_department</mat-icon>
+            </button>
+            
+            <!-- NEW: Quick Cold Button -->
+            <button 
+              mat-icon-button 
+              color="accent"
+              (click)="quickCategorizeAsCold(lead)"
+              matTooltip="Mark as Cold Lead"
+              *ngIf="lead.lead_type !== 'cold'">
+              <mat-icon>ac_unit</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          (click)="selectLead(row)" 
+          class="clickable-row"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                   showFirstLastButtons
+                   aria-label="Select page of leads">
+    </mat-paginator>
+  </div>
+</div>
+
+<!-- Keep your existing lead detail modal exactly as it is -->
+<div class="modal-overlay" *ngIf="selectedLead" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <div class="lead-avatar large">{{selectedLead.name.charAt(0).toUpperCase()}}</div>
+        <div>
+          <h2>{{selectedLead.name}}</h2>
+          <p>Lead Details & Chat History</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="closeModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <!-- UPDATED: Add category to lead details -->
+      <div class="lead-details-grid">
+        <div class="detail-card">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">{{selectedLead.email}}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Country</div>
+          <div class="detail-value">{{selectedLead.country}}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Mobile</div>
+          <div class="detail-value">{{selectedLead.mobile || 'Not provided'}}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">University</div>
+          <div class="detail-value">
+            <span class="university-badge">{{selectedLead.university_code.toUpperCase()}}</span>
+          </div>
+        </div>
+        <!-- NEW: Category in detail view -->
+        <div class="detail-card">
+          <div class="detail-label">Category</div>
+          <div class="detail-value">
+            <span [class]="getLeadTypeBadgeClass(selectedLead.lead_type)">
+              {{ getLeadTypeDisplay(selectedLead.lead_type) }}
+            </span>
+          </div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Registration</div>
+          <div class="detail-value">{{formatDate(selectedLead.created_at)}}</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-label">Chat Sessions</div>
+          <div class="detail-value">{{selectedLead.live_chat_summaries?.length || 0}}</div>
+        </div>
+      </div>
+
+      <!-- Keep all your existing chat history section -->
+      <div class="chat-history" *ngIf="selectedLead.live_chat_summaries && selectedLead.live_chat_summaries.length > 0">
+        <h3>Chat History</h3>
+        <div class="chat-timeline">
+          <div class="chat-item" *ngFor="let chat of selectedLead.live_chat_summaries; let i = index">
+            <div class="chat-timestamp">
+              <div class="timestamp-dot"></div>
+              <span>{{formatDate(chat.timestamp)}}</span>
+            </div>
+            <div class="chat-messages">
+              <div class="message user-message">
+                <div class="message-header">
+                  <span class="message-sender">{{selectedLead.name}}</span>
+                  <span class="message-type">Question</span>
+                </div>
+                <div class="message-content">{{chat.user_message}}</div>
+              </div>
+              <div class="message assistant-message">
+                <div class="message-header">
+                  <span class="message-sender">AI Assistant</span>
+                  <span class="message-type">Response</span>
+                </div>
+                <div class="message-content">{{chat.assistant_response}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-chat-history" *ngIf="!selectedLead.live_chat_summaries || selectedLead.live_chat_summaries.length === 0">
+        <div class="empty-icon">
+          <mat-icon style="font-size: 48px; width: 48px; height: 48px;">chat</mat-icon>
+        </div>
+        <h3>No chat history yet</h3>
+        <p>This lead hasn't engaged in any conversations.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button mat-button (click)="closeModal()">Close</button>
+      <button mat-raised-button color="primary">Export Lead Data</button>
+      <!-- NEW: Categorize button in modal -->
+      <button mat-raised-button color="accent" (click)="openCategorizationModal(selectedLead)">
+        <mat-icon>label</mat-icon>
+        Categorize
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW: Categorization Modal -->
+<div class="categorization-modal" *ngIf="showCategorizationModal" (click)="closeCategorizationModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Categorize Lead</h3>
+      <button class="close-btn" (click)="closeCategorizationModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="leadBeingCategorized">
+      <!-- Lead Info -->
+      <div class="lead-info-section">
+        <div class="lead-info">
+          <div class="lead-avatar">
+            {{ leadBeingCategorized.name.charAt(0).toUpperCase() }}
+          </div>
+          <div class="lead-details">
+            <div class="lead-name">{{ leadBeingCategorized.name }}</div>
+            <div class="lead-email">{{ leadBeingCategorized.email }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categorization Form -->
+      <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 1rem;">
+        <mat-label>Lead Category</mat-label>
+        <mat-select [(ngModel)]="categorizationForm.leadType">
+          <mat-option value="hot">Hot Lead</mat-option>
+          <mat-option value="cold">Cold Lead</mat-option>
+          <mat-option value="not_defined">Not Defined</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Notes (Optional)</mat-label>
+        <textarea 
+          matInput 
+          [(ngModel)]="categorizationForm.notes"
+          placeholder="Add categorization notes..."
+          rows="3">
+        </textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="modal-actions">
+      <button mat-button (click)="closeCategorizationModal()">
+        Cancel
+      </button>
+      <button mat-raised-button color="primary" (click)="saveLeadCategorization()">
+        Save Category
+      </button>
+    </div>
+  </div>
+</div>

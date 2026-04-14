@@ -1,0 +1,72 @@
+<!-- super-admin.component.html -->
+<div class="super-admin-container">
+  
+  <!-- Mobile sidebar overlay backdrop -->
+  <div class="sidebar-overlay" 
+       [class.active]="sidebarOpen" 
+       (click)="closeSidebar()"
+       *ngIf="isMobileView"></div>
+
+  <!-- SuperAdmin Sidebar -->
+  <app-super-admin-sidebar 
+    [activeTab]="activeTab"
+    [isMobileView]="isMobileView"
+    [sidebarOpen]="sidebarOpen"
+    [class.mobile-open]="sidebarOpen"
+    (tabChanged)="onTabChange($event)"
+    (logoutRequested)="onLogout()">
+  </app-super-admin-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="super-admin-content" [class.mobile-view]="isMobileView">
+    
+    <!-- Mobile Header -->
+    <div class="mobile-header" *ngIf="isMobileView">
+      <button mat-icon-button class="mobile-menu-btn" (click)="toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <h1 class="mobile-title">{{ getPageTitle() }}</h1>
+      <button mat-icon-button class="mobile-refresh-btn" (click)="retry()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading SuperAdmin dashboard...</p>
+    </div>
+
+    <!-- Error State -->
+    <mat-card *ngIf="error && !loading" class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+        <button mat-button color="primary" (click)="retry()">Retry</button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Dashboard Tab -->
+    <app-super-admin-dashboard 
+      *ngIf="activeTab === 'dashboard' && !loading && !error"
+      class="tab-content">
+    </app-super-admin-dashboard>
+
+    <!-- Universities Tab -->
+    <app-super-admin-universities 
+        *ngIf="activeTab === 'universities' && !loading && !error"
+        class="tab-content">
+    </app-super-admin-universities>
+
+   <!-- Users Tab -->
+  <app-super-admin-users 
+      *ngIf="activeTab === 'users' && !loading && !error"
+      class="tab-content">
+  </app-super-admin-users>
+
+   <!-- Analytics Tab -->
+  <app-super-admin-analytics 
+    *ngIf="activeTab === 'analytics' && !loading && !error"
+    class="tab-content">
+  </app-super-admin-analytics>
+  </div>
+</div>

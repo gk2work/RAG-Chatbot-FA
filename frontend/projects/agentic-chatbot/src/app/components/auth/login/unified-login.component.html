@@ -1,0 +1,128 @@
+
+<div class="login-container">
+  <div class="login-background-overlay"></div>
+  <div class="login-card-wrapper">
+    <mat-card class="login-card">
+      <!-- Logo/Branding Section -->
+      <div class="login-brand">
+        <div class="brand-icon">
+          <mat-icon>school</mat-icon>
+        </div>
+        <h1 class="brand-title">University Portal</h1>
+        <p class="brand-subtitle">Administration Access</p>
+      </div>
+
+      <!-- Header Section -->
+      <div class="login-header">
+        <h2 class="login-title">Admin Login</h2>
+        <p class="login-subtitle">Sign in to access your administration panel</p>
+      </div>
+
+      <!-- Content Section -->
+      <mat-card-content class="login-content">
+        <form [formGroup]="loginForm" class="login-form" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="full-width modern-field">
+            <mat-label>Email Address</mat-label>
+            <input 
+              matInput 
+              type="email" 
+              formControlName="email"
+              placeholder="admin@college.edu"
+              [disabled]="isLoading"
+              autocomplete="email">
+            <mat-icon matSuffix class="field-icon">email</mat-icon>
+            
+            <mat-error *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="loginForm.get('email')?.hasError('email') && !loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
+              Please enter a valid email address
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="full-width modern-field">
+            <mat-label>Password</mat-label>
+            <input 
+              matInput 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Enter your secure password"
+              [disabled]="isLoading"
+              autocomplete="current-password">
+            
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [disabled]="isLoading"
+              [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            
+            <mat-error *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+              Password is required
+            </mat-error>
+            <mat-error *ngIf="loginForm.get('password')?.hasError('minlength') && !loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+              Password must be at least 6 characters long
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="form-options">
+            <mat-checkbox formControlName="rememberMe" class="remember-me">
+              Remember me
+            </mat-checkbox>
+            <button type="button" mat-button class="forgot-password" [disabled]="isLoading">
+              Forgot Password?
+            </button>
+          </div>
+
+          <!-- Error Message Display -->
+          <div class="error-message" *ngIf="errorMessage" [@slideIn]>
+            <mat-icon color="warn">error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        </form>
+      </mat-card-content>
+
+      <!-- Actions Section -->
+      <mat-card-actions class="login-actions">
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="button"
+          class="login-button"
+          [class.loading]="isLoading"
+          [disabled]="loginForm.invalid || isLoading"
+          (click)="onSubmit()">
+          
+          <div class="button-content">
+            <mat-spinner 
+              *ngIf="isLoading" 
+              diameter="20" 
+              strokeWidth="3"
+              color="accent">
+            </mat-spinner>
+            
+            <span class="button-text" [class.loading]="isLoading">
+              <mat-icon *ngIf="!isLoading">login</mat-icon>
+              {{ isLoading ? 'Authenticating...' : 'Login' }}
+            </span>
+          </div>
+        </button>
+      </mat-card-actions>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p class="security-notice">
+          <mat-icon>security</mat-icon>
+          Secured with end-to-end encryption
+        </p>
+      </div>
+    </mat-card>
+  </div>
+</div>

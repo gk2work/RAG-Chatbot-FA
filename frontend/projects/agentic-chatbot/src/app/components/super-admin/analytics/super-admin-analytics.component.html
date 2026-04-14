@@ -1,0 +1,131 @@
+<!-- Analytics Page Header -->
+<div class="analytics-container">
+  <div class="analytics-header">
+    <h1>Analytics & Reports</h1>
+
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="days-filter">
+        <mat-label>Time Period</mat-label>
+        <mat-select [(value)]="selectedDays" (selectionChange)="onDaysFilterChange()">
+          <mat-option *ngFor="let option of dayOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Real-time Status Indicator -->
+    <div class="realtime-status">
+  <div class="status-indicator" [class.connected]="isConnected" [class.disconnected]="!isConnected">
+    <mat-icon>{{ isConnected ? 'wifi' : 'wifi_off' }}</mat-icon>
+    <span>{{ isConnected ? 'Live' : 'Offline' }}</span>
+  </div>
+  
+  <div *ngIf="lastUpdateTime" class="last-update">
+    <small>Last update: {{ lastUpdateTime | date:'HH:mm:ss' }}</small>
+  </div>
+  
+    <div *ngIf="updateCount > 0" class="update-count">
+    <mat-chip color="accent">{{ updateCount }} updates</mat-chip>
+  </div>
+    </div>
+    
+      <button mat-raised-button color="primary" (click)="refreshData()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+
+    <!-- Export Buttons -->
+  <div class="export-actions">
+    <button mat-raised-button color="accent" (click)="exportToCSV()" [disabled]="!analyticsData">
+      <mat-icon>download</mat-icon>
+      Export CSV
+    </button>
+    
+    <button mat-raised-button color="warn" (click)="exportToPDF()" [disabled]="!analyticsData">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Export PDF
+    </button>
+  </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <!-- Error State -->
+  <mat-card *ngIf="error && !loading" class="error-card">
+    <mat-card-content>
+      <mat-icon color="warn">error</mat-icon>
+      <span>{{ error }}</span>
+      <button mat-button color="primary" (click)="refreshData()">Try Again</button>
+    </mat-card-content>
+  </mat-card>
+</div>
+<!-- Charts Section -->
+  <div *ngIf="analyticsData && !loading && !error" class="charts-content">
+    
+    <!-- Summary Cards Row -->
+    <div class="summary-cards">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="stat-info">
+            <h3>{{ analyticsData.data.leads.total }}</h3>
+            <p>Total Leads</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="stat-info">
+            <h3>{{ analyticsData.data.sessions.total }}</h3>
+            <p>Total Sessions</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="stat-info">
+            <h3>{{ analyticsData.data.users.total }}</h3>
+            <p>Total Users</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Leads by University</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas #leadsChart width="400" height="300"></canvas>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Sessions by University</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas #sessionsChart width="400" height="300"></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Top Countries by Leads</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas #countriesChart width="400" height="300"></canvas>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+  </div>

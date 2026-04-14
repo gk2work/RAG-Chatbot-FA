@@ -1,0 +1,182 @@
+.analytics-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  h1 {
+    margin: 0;
+    color: #1976d2;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    
+    .days-filter {
+      min-width: 150px;
+    }
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px;
+  
+  mat-spinner {
+    margin-bottom: 16px;
+  }
+}
+
+.error-card {
+  margin: 24px 0;
+  
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.summary-cards {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  
+  .summary-card {
+    flex: 1;
+    text-align: center;
+    
+    .stat-info {
+      h3 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: #1976d2;
+      }
+      
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  
+  .chart-card {
+    flex: 1;
+    min-width: 300px;
+    
+    mat-card-content {
+      padding: 16px;
+      height: 300px;
+      
+      canvas {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .analytics-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .summary-cards {
+    flex-direction: column;
+  }
+  
+  .charts-row {
+    flex-direction: column;
+  }
+}
+// Real-time status styling
+.header-actions {
+  .realtime-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-right: 16px;
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      
+      &.connected {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+        
+        mat-icon {
+          color: #4caf50;
+        }
+      }
+      
+      &.disconnected {
+        background-color: #ffebee;
+        color: #c62828;
+        
+        mat-icon {
+          color: #f44336;
+        }
+      }
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+    
+    .last-update {
+      small {
+        color: #666;
+        font-size: 0.7rem;
+      }
+    }
+    
+    .update-count {
+      mat-chip {
+        font-size: 0.7rem;
+        height: 20px;
+        line-height: 20px;
+      }
+    }
+  }
+}
+
+// Animation for updates
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.status-indicator.connected {
+  animation: pulse 2s infinite;
+}

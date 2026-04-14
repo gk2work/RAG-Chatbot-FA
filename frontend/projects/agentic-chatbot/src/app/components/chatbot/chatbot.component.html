@@ -1,0 +1,173 @@
+<div class="chatbot-container" [ngClass]="{
+  'standalone-mode': displayMode === DisplayMode.STANDALONE,
+  'widget-mode': displayMode === DisplayMode.WIDGET,
+  'compact-mode': compactMode,
+  'minimized': isMinimized
+}">
+  <!-- Chat Header - Conditional based on mode -->
+  <div class="chat-header" *ngIf="showWidgetHeader || displayMode === DisplayMode.STANDALONE">
+    <div class="university-logo">
+      <!-- ✅ ALREADY DYNAMIC -->
+      <img 
+        [src]="universityLogo" 
+        [alt]="universityName + ' Logo'" 
+        class="logo-image"
+        (error)="onLogoError($event)" />
+      <div class="text-content">
+        <!-- ✅ ALREADY DYNAMIC -->
+        <h2>{{ universityName }}</h2>
+        <p>AI Assistant</p>
+      </div>
+    </div>
+    
+    <!-- Widget-specific controls -->
+    <div class="chat-controls" *ngIf="isWidgetMode">
+      <button 
+        class="widget-minimize-btn"
+        (click)="handleWidgetMinimize()"
+        title="Minimize chat"
+        *ngIf="!isMinimized">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+      <button 
+        class="widget-close-btn"
+        (click)="handleWidgetClose()"
+        title="Close chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Standalone mode controls -->
+    <div class="chat-controls" *ngIf="showEndButton && displayMode === DisplayMode.STANDALONE">
+      <button 
+        class="end-session-btn"
+        (click)="endSession()"
+        [disabled]="isLoading">
+        End Session
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Messages -->
+  <div class="chat-messages" [ngClass]="chatMessagesClass" id="chat-container">
+    <!-- Empty State -->
+    <div class="empty-chat-state" *ngIf="messages.length === 0 && !isLoading">
+      <div class="empty-content">
+        <!-- Welcome section - show full version in standalone, compact in widget -->
+        <div class="welcome-section" *ngIf="displayMode === DisplayMode.STANDALONE">
+          <div class="welcome-text">
+            <!-- ✅ FIXED: Now dynamic -->
+            <h3>{{ welcomeMessage }}</h3>
+            <p>{{ assistantDescription }}</p>
+          </div>
+        </div>
+
+        <!-- Compact welcome for widget mode -->
+        <div class="welcome-section-compact" *ngIf="displayMode === DisplayMode.WIDGET">
+          <div class="welcome-text-compact">
+            <h4>{{ welcomeMessage }}</h4>
+            <p>How can I help you today?</p>
+          </div>
+        </div>
+
+        <!-- Centered Input - conditional layout -->
+        <div class="centered-input-container" *ngIf="displayMode === DisplayMode.STANDALONE">
+          <div class="input-wrapper">
+            <textarea
+              [(ngModel)]="currentMessage"
+              (keydown)="onKeyPress($event)"
+              placeholder="Type your message to start chatting..."
+              [disabled]="isLoading || !brandingLoaded"
+              rows="1"
+              class="centered-message-input"></textarea>
+            <button 
+              class="centered-send-button"
+              (click)="sendMessage()"
+              [disabled]="!canSendMessage"
+              [ngClass]="{'sending': isLoading}">
+              <svg *ngIf="!isLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 2L11 13"></path>
+                <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+              </svg>
+              <div *ngIf="isLoading" class="loading-spinner"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Display -->
+    <div *ngFor="let message of messages" class="message" [class]="message.type">
+      <div class="message-content">
+        <!-- Assistant Messages with White Background -->
+        <div *ngIf="message.type === 'assistant'" class="message-bubble assistant-bubble">
+          <!-- Streaming Text -->
+          <ng-container *ngIf="message.isStreaming">
+            <div class="streaming-text"><span [innerHTML]="message.content | markdown"></span><span class="cursor">|</span></div>
+          </ng-container>
+          <!-- Fully Rendered -->
+          <div *ngIf="!message.isStreaming" [innerHTML]="message.content | markdown"></div>
+        </div>
+
+        <!-- User Messages with Blue Background -->
+        <div *ngIf="message.type === 'user'" class="message-bubble user-bubble">
+          {{ message.content }}
+        </div>
+
+        <!-- System Messages -->
+        <div *ngIf="message.type === 'system'" class="message-bubble system-bubble">
+          {{ message.content }}
+        </div>
+      </div>
+
+      <div class="message-time">{{ message.timestamp | date:'HH:mm' }}</div>
+    </div>
+  </div>
+
+  <!-- Bottom Input - Always visible in widget mode, conditional in standalone -->
+  <div class="chat-input" 
+       [ngClass]="{
+         'hidden': chatInputClass === 'hidden' && displayMode === DisplayMode.STANDALONE,
+         'widget-input': displayMode === DisplayMode.WIDGET,
+         'compact-input': compactMode
+       }" 
+       *ngIf="currentStage !== ChatStage.ENDED && !isMinimized">
+    <div class="input-container">
+      <!-- Bottom Input - Updated -->
+      <textarea
+        [(ngModel)]="currentMessage"
+        (keydown)="onKeyPress($event)"
+        [placeholder]="getPlaceholderText()"
+        [disabled]="isLoading || !brandingLoaded"
+        rows="1"
+        class="message-input"></textarea>
+
+      <button
+        class="send-button"
+        (click)="sendMessage()"
+        [disabled]="!canSendMessage || !brandingLoaded"
+        [ngClass]="{ sending: isLoading }">
+        <svg *ngIf="!isLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13"></path>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+        </svg>
+        <div *ngIf="isLoading" class="loading-spinner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Ended State -->
+  <div class="chat-ended" *ngIf="currentStage === ChatStage.ENDED">
+    <div class="ended-message">
+      <h3>Session Ended</h3>
+      <!-- ✅ FIXED: Now dynamic -->
+      <p>Thank you for chatting with {{ universityName }}! Your session summary has been saved.</p>
+      <button class="restart-button" (click)="ngOnInit()">Start New Session</button>
+    </div>
+  </div>
+</div>

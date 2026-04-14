@@ -1,0 +1,166 @@
+<!-- super-admin-universities.component.html -->
+<div class="universities-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Universities Management</h1>
+      <p>Manage universities, their settings, and branding</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="onCreateUniversity()">
+        <mat-icon>add</mat-icon>
+        Create University
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading universities...</p>
+  </div>
+
+  <!-- Error State -->
+  <mat-card *ngIf="error && !loading" class="error-card">
+    <mat-card-content>
+      <mat-icon color="warn">error</mat-icon>
+      <span>{{ error }}</span>
+      <button mat-button color="primary" (click)="loadUniversities()">
+        Retry
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Universities Table -->
+  <mat-card *ngIf="!loading && !error" class="table-card">
+    <mat-card-header>
+      <mat-card-title
+        >All Universities ({{ universities.length }})</mat-card-title
+      >
+      <mat-card-subtitle
+        >Manage university settings and view statistics</mat-card-subtitle
+      >
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="universities" class="universities-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>University</th>
+            <td mat-cell *matCellDef="let university">
+              <div class="university-info">
+                <strong>{{ university.name }}</strong>
+                <span class="description">{{ university.description }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Code Column -->
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let university">
+              <span class="code-badge">{{ university.code }}</span>
+            </td>
+          </ng-container>
+
+          <!-- X-ID Column -->
+          <ng-container matColumnDef="x_id">
+            <th mat-header-cell *matHeaderCellDef>X-ID</th>
+            <td mat-cell *matCellDef="let university">
+              <span class="x-id-badge">{{ university.x_id }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Branding Column -->
+          <ng-container matColumnDef="branding">
+            <th mat-header-cell *matHeaderCellDef>Branding</th>
+            <td mat-cell *matCellDef="let university">
+              <div class="branding-status">
+                <mat-icon *ngIf="university.branding?.logo_url" color="primary"
+                  >check_circle</mat-icon
+                >
+                <mat-icon *ngIf="!university.branding?.logo_url" color="accent"
+                  >radio_button_unchecked</mat-icon
+                >
+                <span class="branding-text">
+                  {{ university.branding?.logo_url ? "Customized" : "Default" }}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let university">
+              <span class="status-badge" [class]="university.status">
+                {{ university.status | titlecase }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Stats Column -->
+          <ng-container matColumnDef="stats">
+            <th mat-header-cell *matHeaderCellDef>Statistics</th>
+            <td mat-cell *matCellDef="let university">
+              <div class="stats-summary" *ngIf="university.stats">
+                <div class="stat-item">
+                  <mat-icon>contact_page</mat-icon>
+                  <span>{{ university.stats.total_leads }} leads</span>
+                </div>
+                <div class="stat-item">
+                  <mat-icon>chat</mat-icon>
+                  <span>{{ university.stats.total_sessions }} sessions</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let university">
+              <div class="action-buttons">
+                <button
+                  mat-icon-button
+                  matTooltip="View Details"
+                  (click)="onViewDetails(university)"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  matTooltip="Edit University"
+                  (click)="onEditUniversity(university)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <!-- Add this button in your actions column -->
+                <button
+                  mat-icon-button
+                  color="accent"
+                  (click)="onManageBranding(university)"
+                  matTooltip="Manage Branding"
+                >
+                  <mat-icon>palette</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="primary"
+                  (click)="onManageUniversityDocuments(university)"
+                  matTooltip="Manage Documents"
+                >
+                  <mat-icon>library_books</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

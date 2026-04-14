@@ -1,0 +1,161 @@
+<!-- create-university-dialog.component.html - REDESIGNED -->
+<div class="create-university-dialog">
+  
+  <!-- Modern Header with Gradient -->
+  <div class="dialog-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="header-text">
+        <h2>Create New University</h2>
+        <p>Add a new university to the system</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn" [disabled]="creating">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="universityForm" class="university-form">
+      
+      <!-- Form Fields Container -->
+      <div class="form-container">
+        
+        <!-- University Name -->
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="modern-field">
+            <mat-label>University Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g. Harvard University">
+            <mat-icon matSuffix color="primary">school</mat-icon>
+            <mat-error *ngIf="universityForm.get('name')?.hasError('required')">
+              University name is required
+            </mat-error>
+            <mat-error *ngIf="universityForm.get('name')?.hasError('minlength')">
+              Name must be at least 2 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- University Code -->
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="modern-field">
+            <mat-label>University Code</mat-label>
+            <input matInput formControlName="code" placeholder="e.g. HARV" (input)="onCodeInput($event)">
+            <mat-icon matSuffix color="primary">badge</mat-icon>
+            <mat-hint>2-10 characters, will be converted to uppercase</mat-hint>
+            <mat-error *ngIf="universityForm.get('code')?.hasError('required')">
+              University code is required
+            </mat-error>
+            <mat-error *ngIf="universityForm.get('code')?.hasError('minlength')">
+              Code must be at least 2 characters
+            </mat-error>
+            <mat-error *ngIf="universityForm.get('code')?.hasError('maxlength')">
+              Code cannot exceed 10 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <mat-form-field appearance="outline" class="modern-field">
+            <mat-label>Description (Optional)</mat-label>
+            <textarea matInput formControlName="description" 
+                      placeholder="Brief description of the university..."
+                      rows="4"></textarea>
+            <mat-icon matSuffix color="primary">description</mat-icon>
+            <mat-hint>Provide a brief overview of the university</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Live Preview Card -->
+        <div class="preview-section" [@slideInOut]>
+          <div class="preview-header">
+            <mat-icon>visibility</mat-icon>
+            <span>Live Preview</span>
+          </div>
+          
+          <div class="preview-card">
+            <div class="preview-content">
+              <div class="university-avatar">
+                <mat-icon>account_balance</mat-icon>
+              </div>
+              <div class="university-details">
+                <h3 class="university-name">
+                  {{ universityForm.value.name || 'University Name' }}
+                </h3>
+                <div class="university-code">
+                  <mat-icon>badge</mat-icon>
+                  <span>{{ (universityForm.value.code || 'CODE').toUpperCase() }}</span>
+                </div>
+                <p class="university-description" *ngIf="universityForm.value.description">
+                  {{ universityForm.value.description }}
+                </p>
+                <p class="university-description placeholder" *ngIf="!universityForm.value.description">
+                  No description provided
+                </p>
+              </div>
+            </div>
+            
+            <!-- Features Preview -->
+            <div class="features-preview">
+              <div class="feature-item">
+                <mat-icon color="primary">chat</mat-icon>
+                <span>AI Chatbot Ready</span>
+              </div>
+              <div class="feature-item">
+                <mat-icon color="primary">analytics</mat-icon>
+                <span>Analytics Dashboard</span>
+              </div>
+              <div class="feature-item">
+                <mat-icon color="primary">group</mat-icon>
+                <span>Lead Management</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div *ngIf="isUniversityCreated" class="success-section" [@slideInOut]>
+          <div class="success-content">
+            <div class="success-icon">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="success-text">
+              <h3>University Created Successfully!</h3>
+              <p>
+                <strong>{{ universityName }}</strong> has been created with X-ID: 
+                <span class="x-id-code">{{ universityXId }}</span>
+              </p>
+              <div class="next-steps">
+                <p><mat-icon>info</mat-icon> You can now manage documents and settings from the Universities page.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <!-- Modern Action Buttons -->
+  <mat-dialog-actions class="dialog-actions">
+    <div class="action-buttons">
+      <button mat-button (click)="onCancel()" [disabled]="creating" class="cancel-btn">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+      
+      <button mat-flat-button 
+              color="primary"
+              (click)="onCreate()" 
+              [disabled]="universityForm.invalid || creating"
+              class="create-btn">
+        <mat-icon *ngIf="!creating">add_circle</mat-icon>
+        <mat-icon *ngIf="creating" class="spinning">refresh</mat-icon>
+        <span>{{ creating ? 'Creating University...' : 'Create University' }}</span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,42 @@
+ 
+# Core Web Framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+ 
+# Database & Storage
+pymongo==4.5.0
+# Note: GridFS is included with PyMongo - no separate installation needed
+ 
+# AI & Machine Learning Services
+openai>=1.0.0
+ 
+# Enhanced RAG & Vector Search Dependencies
+sentence-transformers==4.1.0
+transformers==4.52.4
+torch==2.7.1
+tokenizers==0.21.2
+numpy>=1.21.0,<2.0.0
+scikit-learn==1.7.0
+ 
+# Vector Database
+faiss-cpu
+ 
+# Document Processing & PDF Handling
+PyPDF2==3.0.1
+Pillow>=9.0.0
+ 
+# Authentication & Security
+PyJWT==2.8.0
+Werkzeug==2.3.7
+ 
+# Utilities & Configuration
+python-dotenv==1.0.0
+requests==2.32.4
+python-dateutil==2.8.2
+
+
+# NEW: Bot Platform Dependencies
+python-telegram-bot==20.7
+aiohttp==3.9.1
+redis==5.0.1  # For message queue (optional but recommended)
+celery==5.3.4  # For async processing (optional but recommended)
